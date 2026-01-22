@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import DailyCalendar from '@/components/dashboard/DailyCalendar';

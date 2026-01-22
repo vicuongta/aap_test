@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -14,6 +15,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import QBtronLogo from '../../assets/QBtron.png';
 
 const navItems = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
@@ -44,7 +46,7 @@ export default function PermanentSidebar({ collapsed, onToggle }) {
       <div className={cn("pt-6 pb-4 flex items-center justify-between", collapsed ? "px-4" : "px-6")}>
         <Link to={createPageUrl('Landing')} className="flex items-center gap-2.5">
           <img 
-            src="/logo.png" // Placeholder logo
+            src={QBtronLogo} // Placeholder logo
             alt="QBtron Logo"
             className="w-8 h-8 object-contain flex-shrink-0"
           />

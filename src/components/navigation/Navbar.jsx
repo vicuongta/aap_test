@@ -1,42 +1,217 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import Logo from '@/components/ui/Logo';
-import { Button } from '@/components/ui/button';
+// @ts-nocheck
+// Navbar.jsx
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ChevronDown,
+  Home,
+  Sparkles,
+  BookOpen,
+  Mail,
+  Timer,
+  Bot,
+  ListChecks,
+  CalendarDays,
+  FileText,
+  HelpCircle,
+  Map,
+  LifeBuoy,
+  Building2,
+  Users,
+  Briefcase,
+  Newspaper,
+  Handshake,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import QBtronLogo from "../../assets/QBtron.png";
+
+const GREEN = "#2d6a4f";
+
+const resources = [
+  {
+    title: "Getting started",
+    items: [
+      { label: "Home", desc: "Start organizing your semester today", icon: Home, href: "#" },
+      { label: "See what QBTron can do for you", desc: "Learn QBTron’s tools and connect it to tasks", icon: Sparkles, href: "#" },
+      { label: "Blog", desc: "Read our latest thoughts on studying", icon: BookOpen, href: "#" },
+      { label: "Contact", desc: "Get in touch with our team", icon: Mail, href: "#" },
+    ],
+  },
+  {
+    title: "Learning tools",
+    items: [
+      { label: "Pomodoro timer", desc: "Focus sessions built into your workflow", icon: Timer, href: "#" },
+      { label: "AI assistant", desc: "Get study suggestions when you need", icon: Bot, href: "#" },
+      { label: "Task tracking", desc: "Break tasks into manageable steps", icon: ListChecks, href: "#" },
+      { label: "Schedule view", desc: "See your week at a glance", icon: CalendarDays, href: "#" },
+    ],
+  },
+  {
+    title: "Support",
+    items: [
+      { label: "Documentation", desc: "Learn how to use QBTron", icon: FileText, href: "#" },
+      { label: "FAQ", desc: "Find answers to common questions", icon: HelpCircle, href: "#" },
+      { label: "Guides", desc: "Step-by-step tutorials for success", icon: Map, href: "#" },
+      { label: "Help center", desc: "Browse our complete knowledge base", icon: LifeBuoy, href: "#" },
+    ],
+  },
+  {
+    title: "Company",
+    items: [
+      { label: "About", desc: "", icon: Building2, href: "#" },
+      { label: "Team", desc: "", icon: Users, href: "#" },
+      { label: "Careers", desc: "", icon: Briefcase, href: "#" },
+      { label: "Press", desc: "", icon: Newspaper, href: "#" },
+      { label: "Partners", desc: "", icon: Handshake, href: "#" },
+    ],
+  },
+];
 
 export default function Navbar() {
+  const [open, setOpen] = useState(false);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    const onDown = (e) => {
+      if (!headerRef.current) return;
+      if (!headerRef.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Logo />
-          
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-gray-600 hover:text-[#2d6a4f] transition-colors">
-              Features
+    <header ref={headerRef} className="w-full bg-neutral-950">
+      {/* Top bar */}
+      <nav className="relative w-full bg-neutral-950 text-white py-1">
+        {/* subtle vignette like your screenshot */}
+        <div className="pointer-events-none absolute inset-0 opacity-70">
+          <div className="absolute inset-0 bg-[radial-gradient(1200px_500px_at_50%_0%,rgba(120,40,40,0.35),transparent_60%)]" />
+        </div>
+
+        <div className="relative flex h-14 w-full items-center justify-between px-6">
+          {/* Left */}
+          <div className="flex items-center gap-10">
+            <a href="#" className="flex items-center justify-center gap-2">
+              <img src={QBtronLogo} alt="QBTron" className="h-7 w-auto" />
+              <span className="text-2xl font-semibold italic tracking-tight">QBTron</span>
             </a>
-            <a href="#how-it-works" className="text-sm text-gray-600 hover:text-[#2d6a4f] transition-colors">
-              How it Works
-            </a>
-            <Link to={createPageUrl('Help')} className="text-sm text-gray-600 hover:text-[#2d6a4f] transition-colors">
-              FAQ
-            </Link>
+
+            <div className="hidden items-center gap-8 text-md text-white/80 md:flex">
+              <a href="#" className="hover:text-white">
+                Features
+              </a>
+              <a href="#" className="hover:text-white">
+                Blog
+              </a>
+              <a href="#" className="hover:text-white">
+                Contact
+              </a>
+
+              {/* Resources trigger */}
+              <Button
+                variant="default"
+                size="default"
+                onClick={() => setOpen((v) => !v)}
+                className="flex items-center gap-1 px-2 py-1 text-md"
+                aria-haspopup="menu"
+                aria-expanded={open}
+              >
+                Resources
+                <ChevronDown className={`h-3.5 w-3.5 transition ${open ? "rotate-180" : ""}`} />
+              </Button>
+            </div>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <Link to={createPageUrl('Dashboard')}>
-              <Button variant="ghost" className="text-gray-700 hover:text-[#2d6a4f]">
-                Log in
-              </Button>
-            </Link>
-            <Link to={createPageUrl('Dashboard')}>
-              <Button className="bg-[#2d6a4f] hover:bg-[#1b4332] text-white rounded-full px-5">
-                Sign Up Free
-              </Button>
-            </Link>
+
+          {/* Right */}
+          <div className="flex items-center gap-2">
+            <Button size="lg" asChild className="rounded-full" style={{ backgroundColor: "#0A0A0A" }}>
+              <a href="#" className="text-white/80 hover:text-white">
+                Sign in
+              </a>
+            </Button>
+            <Button size="lg" asChild className="rounded-full" style={{ backgroundColor: GREEN }}>
+              <a href="#" className="font-semibold text-white">
+                Start free
+              </a>
+            </Button>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* In-flow dropdown section (animated) */}
+      <section
+        className={[
+          "w-full bg-neutral-950 text-white overflow-hidden",
+          "transition-all duration-500 ease-in-out",
+          "motion-reduce:transition-none",
+          open ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0 pointer-events-none",
+        ].join(" ")}
+      >
+        <div
+          className={[
+            "mx-auto max-w-6xl px-6 py-4",
+            "transition-all duration-500 ease-in-out",
+            "motion-reduce:transition-none",
+            open ? "translate-y-0" : "-translate-y-4",
+          ].join(" ")}
+        >
+          {/* centered panel */}
+          <div
+            className={[
+              "mx-auto w-full max-w-5xl",
+              "bg-neutral-950/95 p-8 backdrop-blur",
+              "transition-all duration-500 ease-in-out",
+              "motion-reduce:transition-none",
+              open ? "scale-100" : "scale-[0.98]",
+            ].join(" ")}
+          >
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
+              {resources.map((col) => (
+                <div key={col.title}>
+                  <div className="mb-4 text-[14px] font-semibold uppercase tracking-wider text-white/70">
+                    {col.title}
+                  </div>
+
+                  <div className="space-y-5">
+                    {col.items.map((it) => {
+                      const Icon = it.icon;
+                      return (
+                        <a
+                          key={it.label}
+                          href={it.href}
+                          className="group flex gap-3 rounded-lg p-3 hover:bg-white/5"
+                        >
+                          <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5">
+                            <Icon className="h-6 w-6text-white/80" />
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="text-md font-semibold text-white">{it.label}</div>
+                            {it.desc ? (
+                              <div className="mt-1 text-[13px] leading-snug text-white/55">
+                                {it.desc}
+                              </div>
+                            ) : null}
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 h-px w-full bg-white/10" />
+          </div>
+        </div>
+      </section>
+    </header>
   );
 }
