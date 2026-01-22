@@ -195,13 +195,11 @@ export default function DailyCalendar() {
     e.stopPropagation();
     setEditingEvent(event);
 
-    // Determine the day for fixed items
-    const day = event.days ? event.days[0] : selectedDayName;
     const duration = (event.endHour || event.startHour + 1) - event.startHour;
 
-    // For fixed items, compute a date from the day name
-    const dayIndex = DAYS_OF_WEEK.indexOf(day);
-    const eventDate = event.dueDate || addDays(weekStart, dayIndex >= 0 ? dayIndex : 0);
+    // For deadline events, use their dueDate
+    // For fixed items, use the currently selected/viewed date since that's the day we clicked on
+    const eventDate = event.dueDate || selectedDate;
 
     setEditForm({
       title: event.title,
@@ -230,6 +228,7 @@ export default function DailyCalendar() {
           ? {
             ...t,
             title: editForm.title,
+            dueDate: editForm.selectedDate,  // Update dueDate so event appears on correct day
             startHour: Number(editForm.startHour),
             endHour: endHour,
             details: editForm.details
@@ -356,34 +355,39 @@ export default function DailyCalendar() {
                     const offset = idx * 10;
                     const width = idx > 0 ? `calc(100% - ${offset}px)` : '100%';
                     const duration = (event.endHour || event.startHour + 1) - event.startHour;
+                    const isShortEvent = duration <= 0.5;
 
                     return (
                       <div
                         key={`${event.id}-${idx}`}
-                        className={`absolute rounded-md px-2 py-1.5 shadow-sm transition-all cursor-pointer group hover:shadow-md ${styles}`}
+                        className={`absolute rounded-md px-2 py-1 shadow-sm transition-all cursor-pointer group hover:shadow-md overflow-hidden ${styles}`}
                         style={{
                           top: '0px',
                           left: `${offset}px`,
                           width: width,
-                          height: `${duration * rowHeight - 4}px`,
-                          minHeight: '36px',
+                          height: `${Math.max(duration * rowHeight - 4, 28)}px`,
+                          minHeight: '28px',
                           zIndex: 10 + idx
                         }}
                         onClick={(e) => handleEditClick(event, e)}
                       >
-                        <div className="flex flex-col h-full justify-center relative">
+                        <div className="flex flex-col h-full justify-center relative overflow-hidden">
                           <Pencil className="w-3 h-3 absolute top-0 right-0 opacity-0 group-hover:opacity-70 transition-opacity" />
 
-                          <div className="text-xs font-bold leading-tight truncate pr-4">
+                          <div className={`font-bold leading-tight truncate pr-4 ${isShortEvent ? 'text-[10px]' : 'text-xs'}`}>
                             {event.title}
                           </div>
-                          <div className="text-[10px] opacity-90 truncate mt-0.5 font-medium">
-                            {event.details}
-                          </div>
-                          {event.associatedDeadline && (
-                            <div className="text-[10px] font-bold mt-0.5 text-red-600">
-                              ⚠ {event.associatedDeadline}
-                            </div>
+                          {!isShortEvent && (
+                            <>
+                              <div className="text-[10px] opacity-90 truncate mt-0.5 font-medium">
+                                {event.details}
+                              </div>
+                              {event.associatedDeadline && (
+                                <div className="text-[10px] font-bold mt-0.5 text-red-600">
+                                  ⚠ {event.associatedDeadline}
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
