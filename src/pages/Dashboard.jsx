@@ -41,7 +41,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-3 ml-auto">
-            <FocusClock />
+            {/* <FocusClock /> */}
             <AskQBtronTrigger onClick={handleOpenChat} className="w-[160px] sm:w-[240px] lg:w-[350px]" />
           </div>
         </motion.div>

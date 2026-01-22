@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { useSchedule } from '@/contexts/ScheduleContext';
 
 // Days of the week
 const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -43,84 +44,12 @@ const generateTimeOptions = () => {
 };
 const TIME_OPTIONS = generateTimeOptions();
 
-// Initial mock data
-const initialFixedItems = [
-  {
-    id: 1,
-    title: 'Calculus II Class',
-    days: ['monday', 'wednesday', 'friday'],
-    startHour: 10,
-    endHour: 11.5,
-    type: 'school',
-    details: 'Room 304 | Chapter 5',
-    associatedDeadline: ''
-  },
-  {
-    id: 2,
-    title: 'Part-time Job',
-    days: ['tuesday', 'thursday'],
-    startHour: 14,
-    endHour: 18,
-    type: 'work',
-    details: 'Campus Bookstore',
-    associatedDeadline: ''
-  },
-  {
-    id: 3,
-    title: 'Gym Session',
-    days: ['monday', 'wednesday', 'friday'],
-    startHour: 7,
-    endHour: 8,
-    type: 'personal',
-    details: 'Leg Day',
-    associatedDeadline: ''
-  },
-  {
-    id: 4,
-    title: 'Physics Lab',
-    days: ['thursday'],
-    startHour: 13,
-    endHour: 15,
-    type: 'school',
-    details: 'Room 302',
-    associatedDeadline: 'Lab Report Due'
-  },
-];
-
-const initialUpcomingTasks = [
-  {
-    id: 101,
-    title: 'Assignment Due',
-    course: 'CS301',
-    dueDate: new Date(Date.now() + 86400000 * 2),
-    startHour: 9,
-    endHour: 10,
-    priority: 'assignment',
-    type: 'deadline',
-    details: 'Submit to Canvas',
-    associatedDeadline: ''
-  },
-  {
-    id: 102,
-    title: 'Quiz',
-    course: 'MATH201',
-    dueDate: new Date(),
-    startHour: 10,
-    endHour: 11,
-    priority: 'quiz',
-    type: 'deadline',
-    details: 'Online Quiz',
-    associatedDeadline: ''
-  },
-];
-
 export default function DailyCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Editable state
-  const [fixedItems, setFixedItems] = useState(initialFixedItems);
-  const [tasks, setTasks] = useState(initialUpcomingTasks);
+  // Use shared context instead of local state
+  const { fixedItems, setFixedItems, tasks, setTasks } = useSchedule();
 
   // Edit modal state
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -154,6 +83,64 @@ export default function DailyCalendar() {
   const dailyTasks = tasks.filter(task =>
     isSameDay(task.dueDate, selectedDate)
   );
+
+  // Combine all events for the day with endHour calculated
+  const allDayEvents = [...dailyFixedItems, ...dailyTasks].map(event => ({
+    ...event,
+    endHour: event.endHour || event.startHour + 1
+  }));
+
+  // Calculate overlap positions for Google Calendar-style side-by-side display
+  const calculateOverlapPositions = (events) => {
+    if (events.length === 0) return [];
+
+    const sortedEvents = [...events].sort((a, b) => {
+      if (a.startHour !== b.startHour) return a.startHour - b.startHour;
+      return (b.endHour - b.startHour) - (a.endHour - a.startHour);
+    });
+
+    const positioned = [];
+
+    for (const event of sortedEvents) {
+      const overlapping = positioned.filter(p =>
+        p.startHour < event.endHour && p.endHour > event.startHour
+      );
+
+      const usedColumns = overlapping.map(o => o.column);
+      let column = 0;
+      while (usedColumns.includes(column)) {
+        column++;
+      }
+
+      const maxColumn = Math.max(column, ...overlapping.map(o => o.column));
+      const totalColumns = maxColumn + 1;
+
+      overlapping.forEach(o => {
+        o.totalColumns = Math.max(o.totalColumns, totalColumns);
+      });
+
+      positioned.push({
+        ...event,
+        column,
+        totalColumns
+      });
+    }
+
+    // Second pass: ensure consistent totalColumns for all overlapping events
+    for (const event of positioned) {
+      const overlapping = positioned.filter(p =>
+        p.startHour < event.endHour && p.endHour > event.startHour
+      );
+      const maxTotalColumns = Math.max(...overlapping.map(o => o.totalColumns));
+      overlapping.forEach(o => {
+        o.totalColumns = maxTotalColumns;
+      });
+    }
+
+    return positioned;
+  };
+
+  const positionedEvents = calculateOverlapPositions(allDayEvents);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const rowHeight = 60;
@@ -341,40 +328,44 @@ export default function DailyCalendar() {
             const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
             const timeString = `${displayHour} ${isPM ? 'PM' : 'AM'}`;
 
-            let eventsAtHour = [
-              ...dailyFixedItems.filter(item => Math.floor(item.startHour) === hour),
-              ...dailyTasks.filter(task => Math.floor(task.startHour) === hour)
-            ];
+            // Get positioned events that start at this hour
+            const eventsAtHour = positionedEvents.filter(e => Math.floor(e.startHour) === hour);
+            // Get all events at this hour for conflict styling
+            const allEventsAtThisHour = allDayEvents.filter(e =>
+              e.startHour < hour + 1 && e.endHour > hour
+            );
 
             return (
               <div key={hour} className="flex items-start gap-2 mb-1">
                 <span className="text-[10px] text-gray-400 w-8 flex-shrink-0 pt-1 text-right">{timeString}</span>
                 <div className="flex-1 border-t border-gray-100 pt-1 relative" style={{ minHeight: `${rowHeight}px` }}>
-                  {eventsAtHour.map((event, idx) => {
-                    const styles = getEventStyles(event, eventsAtHour);
-                    const offset = idx * 10;
-                    const width = idx > 0 ? `calc(100% - ${offset}px)` : '100%';
-                    const duration = (event.endHour || event.startHour + 1) - event.startHour;
+                  {eventsAtHour.map((event) => {
+                    const styles = getEventStyles(event, allEventsAtThisHour);
+                    const duration = event.endHour - event.startHour;
                     const isShortEvent = duration <= 0.5;
+
+                    // Calculate side-by-side positioning
+                    const widthPercent = 100 / event.totalColumns;
+                    const leftPercent = event.column * widthPercent;
 
                     return (
                       <div
-                        key={`${event.id}-${idx}`}
+                        key={event.id}
                         className={`absolute rounded-md px-2 py-1 shadow-sm transition-all cursor-pointer group hover:shadow-md overflow-hidden ${styles}`}
                         style={{
                           top: '0px',
-                          left: `${offset}px`,
-                          width: width,
+                          left: `${leftPercent}%`,
+                          width: `calc(${widthPercent}% - 4px)`,
                           height: `${Math.max(duration * rowHeight - 4, 28)}px`,
                           minHeight: '28px',
-                          zIndex: 10 + idx
+                          zIndex: 10 + event.column
                         }}
                         onClick={(e) => handleEditClick(event, e)}
                       >
                         <div className="flex flex-col h-full justify-center relative overflow-hidden">
                           <Pencil className="w-3 h-3 absolute top-0 right-0 opacity-0 group-hover:opacity-70 transition-opacity" />
 
-                          <div className={`font-bold leading-tight truncate pr-4 ${isShortEvent ? 'text-[10px]' : 'text-xs'}`}>
+                          <div className={`font-bold leading-tight line-clamp-2 pr-4 ${isShortEvent ? 'text-[10px]' : 'text-xs'}`}>
                             {event.title}
                           </div>
                           {!isShortEvent && (
