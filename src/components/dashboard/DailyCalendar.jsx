@@ -1,31 +1,145 @@
 import React, { useState, useEffect } from 'react';
 import { format, startOfWeek, addDays, isSameDay, isToday } from 'date-fns';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Pencil, Trash2, Clock, CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
-const mockFixedItems = [
-  { id: 1, title: 'Calculus II Class', days: ['monday', 'wednesday', 'friday'], startHour: 10, duration: 1 },
-  { id: 2, title: 'Part-time Job', days: ['tuesday', 'thursday'], startHour: 14, duration: 4 },
-  { id: 3, title: 'Gym Session', days: ['monday', 'wednesday', 'friday'], startHour: 7, duration: 1 },
-  { id: 4, title: 'Physics Lab', days: ['thursday'], startHour: 13, duration: 2 },
+// Days of the week
+const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+// Generate time options (30 min intervals)
+const generateTimeOptions = () => {
+  const options = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const label = `${hour12}:${m.toString().padStart(2, '0')} ${ampm}`;
+      const value = h + m / 60; // Decimal hour
+      options.push({ label, value });
+    }
+  }
+  return options;
+};
+const TIME_OPTIONS = generateTimeOptions();
+
+// Initial mock data
+const initialFixedItems = [
+  {
+    id: 1,
+    title: 'Calculus II Class',
+    days: ['monday', 'wednesday', 'friday'],
+    startHour: 10,
+    endHour: 11.5,
+    type: 'school',
+    details: 'Room 304 | Chapter 5',
+    associatedDeadline: ''
+  },
+  {
+    id: 2,
+    title: 'Part-time Job',
+    days: ['tuesday', 'thursday'],
+    startHour: 14,
+    endHour: 18,
+    type: 'work',
+    details: 'Campus Bookstore',
+    associatedDeadline: ''
+  },
+  {
+    id: 3,
+    title: 'Gym Session',
+    days: ['monday', 'wednesday', 'friday'],
+    startHour: 7,
+    endHour: 8,
+    type: 'personal',
+    details: 'Leg Day',
+    associatedDeadline: ''
+  },
+  {
+    id: 4,
+    title: 'Physics Lab',
+    days: ['thursday'],
+    startHour: 13,
+    endHour: 15,
+    type: 'school',
+    details: 'Room 302',
+    associatedDeadline: 'Lab Report Due'
+  },
 ];
 
-const mockUpcomingTasks = [
-  { id: 1, title: 'Assignment Due', course: 'CS301', dueDate: new Date(Date.now() + 86400000 * 2), startHour: 9, duration: 0.5, priority: 'assignment' },
-  { id: 2, title: 'Quiz', course: 'MATH201', dueDate: new Date(Date.now() + 86400000 * 1), startHour: 11, duration: 0.5, priority: 'quiz' },
-  { id: 3, title: 'Midterm Exam', course: 'PHYS101', dueDate: new Date(Date.now() + 86400000 * 4), startHour: 14, duration: 2, priority: 'exam' },
-  { id: 4, title: 'Project Due', course: 'ENG102', dueDate: new Date(Date.now() + 86400000 * 3), startHour: 23, duration: 0, priority: 'assignment' },
+const initialUpcomingTasks = [
+  {
+    id: 101,
+    title: 'Assignment Due',
+    course: 'CS301',
+    dueDate: new Date(Date.now() + 86400000 * 2),
+    startHour: 9,
+    endHour: 10,
+    priority: 'assignment',
+    type: 'deadline',
+    details: 'Submit to Canvas',
+    associatedDeadline: ''
+  },
+  {
+    id: 102,
+    title: 'Quiz',
+    course: 'MATH201',
+    dueDate: new Date(),
+    startHour: 10,
+    endHour: 11,
+    priority: 'quiz',
+    type: 'deadline',
+    details: 'Online Quiz',
+    associatedDeadline: ''
+  },
 ];
 
 export default function DailyCalendar() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Editable state
+  const [fixedItems, setFixedItems] = useState(initialFixedItems);
+  const [tasks, setTasks] = useState(initialUpcomingTasks);
+
+  // Edit modal state
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    selectedDate: new Date(),
+    startHour: 9,
+    endHour: 10,
+    useDuration: false,
+    duration: 1,
+    details: '',
+    associatedDeadline: ''
+  });
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
-
+    }, 60000);
     return () => clearInterval(timer);
   }, []);
 
@@ -33,29 +147,42 @@ export default function DailyCalendar() {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const selectedDayName = format(selectedDate, 'EEEE').toLowerCase();
 
-  const dailyFixedItems = mockFixedItems.filter(item =>
+  const dailyFixedItems = fixedItems.filter(item =>
     item.days.includes(selectedDayName)
   );
 
-  const dailyTasks = mockUpcomingTasks.filter(task =>
+  const dailyTasks = tasks.filter(task =>
     isSameDay(task.dueDate, selectedDate)
   );
 
-  // Get priority for each day in the week
-  const getDayPriority = (day) => {
-    const dayTasks = mockUpcomingTasks.filter(task => isSameDay(task.dueDate, day));
-    if (dayTasks.length === 0) return null;
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const rowHeight = 60;
 
-    // Return highest priority (exam > quiz > assignment)
+  const getEventStyles = (event, allEventsAtHour) => {
+    const hasConflict = event.type === 'school' && (
+      allEventsAtHour.some(e => e.type === 'deadline') ||
+      (event.associatedDeadline && event.associatedDeadline.trim() !== '')
+    );
+
+    if (event.type === 'school') {
+      return hasConflict
+        ? "bg-sky-100 text-red-600 border-l-4 border-red-500"
+        : "bg-sky-100 text-sky-900 border-l-4 border-sky-500";
+    } else if (event.type === 'deadline') {
+      return "bg-red-500 text-white border-l-4 border-red-700";
+    } else {
+      return "bg-gray-100 text-gray-700 border-l-4 border-gray-400";
+    }
+  };
+
+  const getDayPriority = (day) => {
+    const dayTasks = tasks.filter(task => isSameDay(task.dueDate, day));
+    if (dayTasks.length === 0) return null;
     if (dayTasks.some(t => t.priority === 'exam')) return 'exam';
     if (dayTasks.some(t => t.priority === 'quiz')) return 'quiz';
     return 'assignment';
   };
 
-  const hours = Array.from({ length: 24 }, (_, i) => i); // Full 24-hour day: 12 AM to 11 PM
-  const rowHeight = 40; // Compressed spacing to fit full day
-
-  // Calculate current time line position
   const isSelectedToday = isToday(selectedDate);
   const currentHour = currentTime.getHours();
   const currentMinute = currentTime.getMinutes();
@@ -68,11 +195,13 @@ export default function DailyCalendar() {
     e.stopPropagation();
     setEditingEvent(event);
 
+    // Determine the day for fixed items
+    const day = event.days ? event.days[0] : selectedDayName;
     const duration = (event.endHour || event.startHour + 1) - event.startHour;
 
-    // For deadline events, use their dueDate
-    // For fixed items, use the currently selected/viewed date since that's the day we clicked on
-    const eventDate = event.dueDate || selectedDate;
+    // For fixed items, compute a date from the day name
+    const dayIndex = DAYS_OF_WEEK.indexOf(day);
+    const eventDate = event.dueDate || addDays(weekStart, dayIndex >= 0 ? dayIndex : 0);
 
     setEditForm({
       title: event.title,
@@ -101,7 +230,6 @@ export default function DailyCalendar() {
           ? {
             ...t,
             title: editForm.title,
-            dueDate: editForm.selectedDate, // Update the dueDate to match selected date
             startHour: Number(editForm.startHour),
             endHour: endHour,
             details: editForm.details
@@ -178,10 +306,7 @@ export default function DailyCalendar() {
                 )}
               >
                 <span className="text-xs font-medium mb-1">{format(day, 'EEE')}</span>
-                <span className={cn(
-                  "text-base font-semibold",
-                  isSelected && "text-white"
-                )}>
+                <span className={cn("text-base font-semibold", isSelected && "text-white")}>
                   {format(day, 'd')}
                 </span>
                 {priority && (
@@ -202,7 +327,6 @@ export default function DailyCalendar() {
       {/* Timeline View */}
       <div className="flex-1 overflow-y-auto px-3 py-2">
         <div className="relative">
-          {/* Current Time Indicator */}
           {currentTimePosition !== null && (
             <div
               className="absolute left-0 right-0 z-10 flex items-center"
@@ -218,38 +342,222 @@ export default function DailyCalendar() {
             const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
             const timeString = `${displayHour} ${isPM ? 'PM' : 'AM'}`;
 
-            // Find events at this hour
-            const eventsAtHour = [
-              ...dailyFixedItems.filter(item => item.startHour === hour),
-              ...dailyTasks.filter(task => task.startHour === hour)
+            let eventsAtHour = [
+              ...dailyFixedItems.filter(item => Math.floor(item.startHour) === hour),
+              ...dailyTasks.filter(task => Math.floor(task.startHour) === hour)
             ];
 
             return (
               <div key={hour} className="flex items-start gap-2 mb-1">
-                <span className="text-xs text-gray-400 w-10 flex-shrink-0 pt-0.5">{timeString}</span>
+                <span className="text-[10px] text-gray-400 w-8 flex-shrink-0 pt-1 text-right">{timeString}</span>
                 <div className="flex-1 border-t border-gray-100 pt-1 relative" style={{ minHeight: `${rowHeight}px` }}>
-                  {eventsAtHour.map((event, idx) => (
-                    <div
-                      key={idx}
-                      className="absolute left-0 right-0 bg-[#2d6a4f] rounded px-1.5 py-0.5 mb-1"
-                      style={{
-                        top: `${idx * 24}px`,
-                        height: `${event.duration * rowHeight}px`,
-                        minHeight: '20px'
-                      }}
-                    >
-                      <div className="flex items-center gap-1">
-                        <div className="w-1 h-1 rounded-full bg-white"></div>
-                        <span className="text-xs text-white font-medium truncate">{event.title}</span>
+                  {eventsAtHour.map((event, idx) => {
+                    const styles = getEventStyles(event, eventsAtHour);
+                    const offset = idx * 10;
+                    const width = idx > 0 ? `calc(100% - ${offset}px)` : '100%';
+                    const duration = (event.endHour || event.startHour + 1) - event.startHour;
+
+                    return (
+                      <div
+                        key={`${event.id}-${idx}`}
+                        className={`absolute rounded-md px-2 py-1.5 shadow-sm transition-all cursor-pointer group hover:shadow-md ${styles}`}
+                        style={{
+                          top: '0px',
+                          left: `${offset}px`,
+                          width: width,
+                          height: `${duration * rowHeight - 4}px`,
+                          minHeight: '36px',
+                          zIndex: 10 + idx
+                        }}
+                        onClick={(e) => handleEditClick(event, e)}
+                      >
+                        <div className="flex flex-col h-full justify-center relative">
+                          <Pencil className="w-3 h-3 absolute top-0 right-0 opacity-0 group-hover:opacity-70 transition-opacity" />
+
+                          <div className="text-xs font-bold leading-tight truncate pr-4">
+                            {event.title}
+                          </div>
+                          <div className="text-[10px] opacity-90 truncate mt-0.5 font-medium">
+                            {event.details}
+                          </div>
+                          {event.associatedDeadline && (
+                            <div className="text-[10px] font-bold mt-0.5 text-red-600">
+                              ⚠ {event.associatedDeadline}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* Edit Dialog - Google Calendar Style */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent className="sm:max-w-[480px] rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">Edit Event</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-5 py-4">
+            {/* Title */}
+            <div className="space-y-2">
+              <Input
+                id="title"
+                value={editForm.title}
+                onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                className="text-lg font-medium border-0 border-b-2 rounded-none focus-visible:ring-0 focus-visible:border-blue-500 px-0"
+                placeholder="Add title"
+              />
+            </div>
+
+            {/* Date Selection with Calendar */}
+            <div className="flex items-center gap-4">
+              <CalendarIcon className="w-4 h-4 text-gray-400" />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "flex-1 justify-start text-left font-normal",
+                      !editForm.selectedDate && "text-muted-foreground"
+                    )}
+                  >
+                    {editForm.selectedDate ? (
+                      format(editForm.selectedDate, "EEEE, MMMM d, yyyy")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={editForm.selectedDate}
+                    onSelect={(date) => date && setEditForm(prev => ({ ...prev, selectedDate: date }))}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Time Row */}
+            <div className="flex items-center gap-4">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <div className="flex-1 flex items-center gap-2">
+                {/* Start Time */}
+                <Select
+                  value={String(editForm.startHour)}
+                  onValueChange={(val) => setEditForm(prev => ({ ...prev, startHour: Number(val) }))}
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Start" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {TIME_OPTIONS.map(opt => (
+                      <SelectItem key={opt.value} value={String(opt.value)}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <span className="text-gray-400">—</span>
+
+                {/* End Time or Duration Toggle */}
+                {editForm.useDuration ? (
+                  <Select
+                    value={String(editForm.duration)}
+                    onValueChange={(val) => setEditForm(prev => ({ ...prev, duration: Number(val) }))}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
+                        <SelectItem key={d} value={String(d)}>
+                          {d} hr{d !== 1 ? 's' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Select
+                    value={String(editForm.endHour)}
+                    onValueChange={(val) => setEditForm(prev => ({ ...prev, endHour: Number(val) }))}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="End" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {TIME_OPTIONS.filter(o => o.value > editForm.startHour).map(opt => (
+                        <SelectItem key={opt.value} value={String(opt.value)}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            </div>
+
+            {/* Duration Toggle */}
+            <div className="flex items-center gap-4 pl-8">
+              <Label htmlFor="use-duration" className="text-sm text-gray-500">Use duration instead</Label>
+              <Switch
+                id="use-duration"
+                checked={editForm.useDuration}
+                onCheckedChange={(val) => setEditForm(prev => ({ ...prev, useDuration: val }))}
+              />
+            </div>
+
+            {/* Details */}
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-500">Details</Label>
+              <Input
+                value={editForm.details}
+                onChange={(e) => setEditForm(prev => ({ ...prev, details: e.target.value }))}
+                placeholder="Add location, notes, etc."
+              />
+            </div>
+
+            {/* Associated Deadline (School only) */}
+            {editingEvent && editingEvent.type === 'school' && (
+              <div className="space-y-2 p-3 bg-sky-50 rounded-lg border border-sky-100">
+                <Label className="text-sm text-sky-700 font-medium">Associated Deadline/Task</Label>
+                <Input
+                  value={editForm.associatedDeadline}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, associatedDeadline: e.target.value }))}
+                  placeholder="e.g., Lab Report Due"
+                  className="bg-white"
+                />
+                <p className="text-xs text-sky-600">This will show a red alert on the calendar block.</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex justify-between sm:justify-between gap-2">
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              className="flex items-center gap-1"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </Button>
+            <div className="flex gap-2">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button onClick={handleSave}>Save</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
