@@ -63,6 +63,91 @@ export default function DailyCalendar() {
     ? (currentHour * rowHeight) + ((currentMinute / 60) * rowHeight)
     : null;
 
+  // Handle edit click
+  const handleEditClick = (event, e) => {
+    e.stopPropagation();
+    setEditingEvent(event);
+
+    const duration = (event.endHour || event.startHour + 1) - event.startHour;
+
+    // For deadline events, use their dueDate
+    // For fixed items, use the currently selected/viewed date since that's the day we clicked on
+    const eventDate = event.dueDate || selectedDate;
+
+    setEditForm({
+      title: event.title,
+      selectedDate: eventDate,
+      startHour: event.startHour,
+      endHour: event.endHour || event.startHour + 1,
+      useDuration: false,
+      duration: duration,
+      details: event.details || '',
+      associatedDeadline: event.associatedDeadline || ''
+    });
+    setEditModalOpen(true);
+  };
+
+  // Handle save
+  const handleSave = () => {
+    if (!editingEvent) return;
+
+    const endHour = editForm.useDuration
+      ? editForm.startHour + Number(editForm.duration)
+      : Number(editForm.endHour);
+
+    if (editingEvent.type === 'deadline') {
+      setTasks(prev => prev.map(t =>
+        t.id === editingEvent.id
+          ? {
+            ...t,
+            title: editForm.title,
+            dueDate: editForm.selectedDate, // Update the dueDate to match selected date
+            startHour: Number(editForm.startHour),
+            endHour: endHour,
+            details: editForm.details
+          }
+          : t
+      ));
+    } else {
+      setFixedItems(prev => prev.map(item =>
+        item.id === editingEvent.id
+          ? {
+            ...item,
+            title: editForm.title,
+            days: [format(editForm.selectedDate, 'EEEE').toLowerCase()],
+            startHour: Number(editForm.startHour),
+            endHour: endHour,
+            details: editForm.details,
+            associatedDeadline: editForm.associatedDeadline
+          }
+          : item
+      ));
+    }
+
+    setEditModalOpen(false);
+    setEditingEvent(null);
+  };
+
+  // Handle delete
+  const handleDelete = () => {
+    if (!editingEvent) return;
+
+    if (editingEvent.type === 'deadline') {
+      setTasks(prev => prev.filter(t => t.id !== editingEvent.id));
+    } else {
+      setFixedItems(prev => prev.filter(item => item.id !== editingEvent.id));
+    }
+
+    setEditModalOpen(false);
+    setEditingEvent(null);
+  };
+
+  // Get time label
+  const getTimeLabel = (decimalHour) => {
+    const option = TIME_OPTIONS.find(o => o.value === decimalHour);
+    return option ? option.label : `${Math.floor(decimalHour)}:00`;
+  };
+
   return (
     <div className="flex flex-col h-full min-h-0 bg-white rounded-xl border border-gray-100/50">
       {/* Header */}
