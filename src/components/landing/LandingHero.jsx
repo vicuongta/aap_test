@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import FloatingWrapper from "@/components/ui/FloatingWrapper";
 
 const GREEN = "#2d6a4f";
 
@@ -84,15 +85,10 @@ export default function LandingHero() {
               <div className="absolute inset-0 bg-black/20" />
 
               {/* Floating Card 1 - Study Plan (Green) */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: [0, -10, 0] }}
-                whileHover={{ scale: 1.02, y: 0 }}
-                transition={{
-                  opacity: { duration: 0.6, delay: 0.2 },
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                  scale: { duration: 0.2 }
-                }}
+              <FloatingWrapper
+                index={0}
+                floatDistance={18}
+                duration={4}
                 className="absolute top-4 left-4 md:top-8 md:left-8 w-56 md:w-64 bg-white rounded-2xl shadow-2xl p-5 z-30 cursor-pointer hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.4)] transition-shadow duration-200"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -122,19 +118,13 @@ export default function LandingHero() {
                     <button className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">Start</button>
                   </div>
                 </div>
-              </motion.div>
+              </FloatingWrapper>
 
               {/* Floating Card 2 - Deadlines (Orange) */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0, y: [0, -10, 0] }}
-                whileHover={{ scale: 1.02, y: 0 }}
-                transition={{
-                  opacity: { duration: 0.6, delay: 0.35 },
-                  x: { duration: 0.6, delay: 0.35 },
-                  y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.3 },
-                  scale: { duration: 0.2 }
-                }}
+              <FloatingWrapper
+                index={1}
+                floatDistance={14}
+                duration={4.5}
                 className="absolute top-1/4 right-4 md:right-8 w-56 md:w-64 bg-white rounded-2xl shadow-2xl p-5 z-20 cursor-pointer hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.4)] transition-shadow duration-200"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -164,18 +154,13 @@ export default function LandingHero() {
                     <span className="text-xs font-bold text-red-500">7 days</span>
                   </div>
                 </div>
-              </motion.div>
+              </FloatingWrapper>
 
               {/* Floating Card 3 - Calendar (Blue) */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: [0, -10, 0] }}
-                whileHover={{ scale: 1.02, y: 0 }}
-                transition={{
-                  opacity: { duration: 0.6, delay: 0.5 },
-                  y: { duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.6 },
-                  scale: { duration: 0.2 }
-                }}
+              <FloatingWrapper
+                index={2}
+                floatDistance={16}
+                duration={5}
                 className="absolute bottom-6 left-1/4 md:left-1/4 md:bottom-10 w-64 md:w-72 bg-white rounded-2xl shadow-2xl p-5 z-10 cursor-pointer hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.4)] transition-shadow duration-200"
               >
                 <div className="flex items-center justify-between mb-4">
@@ -208,7 +193,7 @@ export default function LandingHero() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </FloatingWrapper>
             </motion.div>
           </div>
         </motion.div>
