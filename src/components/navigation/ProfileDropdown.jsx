@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -58,7 +59,7 @@ export default function ProfileDropdown({ user }) {
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="cursor-pointer rounded-lg text-red-600 focus:text-red-600 focus:bg-red-50"
           onClick={handleLogout}
         >

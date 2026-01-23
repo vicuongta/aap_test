@@ -26,7 +26,7 @@ export default function Dashboard() {
   return (
     <
       // @ts-ignore
-      AppLayout user={mockUser} title="Dashboard" className="flex flex-col ">
+      AppLayout user={mockUser} title="Overview" className="flex flex-col ">
       <div className="p-6 lg:p-8 flex flex-col h-full">
         {/* Welcome Section */}
         <motion.div

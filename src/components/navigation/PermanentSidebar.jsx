@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import QBtronLogo from '../../assets/QBtron.png';
 
 const navItems = [
-  { name: 'Overview', icon: LayoutDashboard, page: 'Overview' },
+  { name: 'Overview', icon: LayoutDashboard, page: 'Dashboard' },
   { name: 'Courses', icon: BookOpen, page: 'Courses' },
   { name: 'Schedule', icon: Calendar, page: 'WeeklyPlanner' },
   { name: 'Task List', icon: CheckSquare, page: 'TaskList' },
