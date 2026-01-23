@@ -16,7 +16,7 @@ export default function LandingHero() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-neutral-950 px-6 py-16 md:py-24">
+    <section className="relative overflow-hidden bg-neutral-950 px-6 py-16 md:py-24 min-h-screen">
       {/* background vignette */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(900px_450px_at_50%_0%,rgba(120,40,40,0.30),transparent_65%)]" />

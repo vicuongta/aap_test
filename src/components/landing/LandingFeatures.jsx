@@ -56,7 +56,7 @@ const cardVariants = {
 
 export default function LandingFeatures() {
   return (
-    <section className="relative overflow-hidden bg-neutral-950 px-6 py-20 md:py-28">
+    <section className="relative overflow-hidden bg-white px-6 py-20 md:py-28">
       {/* background vignette */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(900px_450px_at_50%_0%,rgba(120,40,40,0.25),transparent_65%)]" />
@@ -72,13 +72,13 @@ export default function LandingFeatures() {
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="text-center"
         >
-          <div className="text-xl font-semibold tracking-wide text-white/60">
+          <div className="text-xl font-semibold tracking-wide text-neutral-950">
             Built
           </div>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white md:text-5xl">
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
             Three ways to work
           </h2>
-          <p className="mt-3 text-sm text-white/60 md:text-base">
+          <p className="mt-3 text-sm text-neutral-950 md:text-base">
             Everything you need in one place
           </p>
         </motion.div>
@@ -105,19 +105,19 @@ export default function LandingFeatures() {
               </div>
 
               <div className="px-6 py-6">
-                <div className="text-[11px] font-semibold tracking-wide text-white/60">
+                <div className="text-[11px] font-semibold tracking-wide text-neutral-950">
                   {c.tag}
                 </div>
 
-                <div className="mt-2 text-2xl font-semibold tracking-tight text-white">
+                <div className="mt-2 text-2xl font-semibold tracking-tight text-neutral-950">
                   {c.title}
                 </div>
 
-                <div className="mt-3 text-sm leading-relaxed text-white/60">
+                <div className="mt-3 text-sm leading-relaxed text-neutral-950">
                   {c.desc}
                 </div>
 
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-white/75 transition-colors group-hover:text-white">
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-neutral-950 transition-colors group-hover:text-white">
                   Explore <ArrowRight className="h-4 w-4" />
                 </div>
               </div>
