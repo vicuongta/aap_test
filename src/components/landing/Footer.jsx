@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
+import QBtronLogo from "../../assets/QBtron.png";
 
 export default function Footer() {
   const leftLinks = [
@@ -34,7 +35,7 @@ export default function Footer() {
           {/* Left Section - Brand */}
           <div className="max-w-sm">
             <div className="flex items-center gap-2 mb-6">
-              <img src="/src/assets/QBtron.png" alt="QBtron" className="w-8 h-8" />
+              <img src={QBtronLogo} alt="QBtron" className="w-8 h-8" />
               <span className="text-white font-semibold text-xl italic">QBtron</span>
             </div>
             <h3 className="text-2xl md:text-3xl font-semibold text-white mb-2">
