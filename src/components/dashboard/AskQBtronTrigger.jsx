@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function AskQBtronTrigger({ onClick, className }) {
@@ -19,15 +19,23 @@ export default function AskQBtronTrigger({ onClick, className }) {
     <button
       onClick={() => onClick('')}
       className={cn(
-        "flex items-center gap-2 bg-white rounded-full border border-gray-200 hover:border-[#2d6a4f]/40 hover:shadow-sm transition-all px-3 py-2 h-10",
+        "group relative flex items-center gap-2 rounded-full px-4 h-12 transition-all duration-300",
+        "bg-gradient-to-r from-[#0d3320] via-[#1F4E3D] to-[#40916c]",
+        "hover:from-[#0a2618] hover:via-[#163a2e] hover:to-[#2d6a4f]",
+        "shadow-sm shadow-[#2d6a4f]/20 hover:shadow-md hover:shadow-[#2d6a4f]/30",
         className
       )}
     >
-      <Sparkles className="w-4 h-4 text-[#2d6a4f] flex-shrink-0" />
-      <span className="text-sm text-gray-500 hidden sm:inline">Ask QBtron…</span>
-      <kbd className="hidden lg:inline-flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 flex-shrink-0 ml-auto">
-        ⌘K
-      </kbd>
+      {/* Sparkle icon */}
+      <Sparkles className="w-5 h-5 text-white/90 group-hover:text-white group-hover:animate-pulse" />
+
+      {/* Text */}
+      <span className="text-sm font-medium text-white/90 group-hover:text-white hidden sm:inline truncate">
+        Ask QBtron...
+      </span>
+
+      {/* Keyboard shortcut */}
+
     </button>
   );
 }
