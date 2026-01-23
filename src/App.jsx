@@ -10,6 +10,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { ScheduleProvider } from '@/contexts/ScheduleContext';
+import { TimerProvider } from '@/contexts/TimerContext';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -73,10 +74,12 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <ScheduleProvider>
-          <Router>
-            <NavigationTracker />
-            <AuthenticatedApp />
-          </Router>
+          <TimerProvider>
+            <Router>
+              <NavigationTracker />
+              <AuthenticatedApp />
+            </Router>
+          </TimerProvider>
         </ScheduleProvider>
         <Toaster />
         <VisualEditAgent />

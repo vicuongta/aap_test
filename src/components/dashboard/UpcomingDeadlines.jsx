@@ -82,7 +82,7 @@ export default function UpcomingDeadlines() {
           <div className="flex flex-col">
             <div className="flex items-center gap-2 font-semibold text-white mb-0.5">
               <CalendarDays className="w-5 h-5 text-white" />
-              Coming Up Deadline
+              Deadlines
             </div>
             <p className="text-xs text-white/80">
               This list only shows deadlines for the next 7 days.
@@ -90,7 +90,7 @@ export default function UpcomingDeadlines() {
           </div>
           {/* Inverted badge - white bg with orange text */}
           <span className="flex items-center justify-center text-sm px-3 py-1 rounded-full bg-white text-amber-600 font-medium self-center">
-            <span className="font-bold mr-1">{upcomingDeadlines.length}</span> deadlines
+            <span className="font-bold mr-1">{upcomingDeadlines.length}</span> <span className="font-bold">due</span>
           </span>
         </div>
       </div>

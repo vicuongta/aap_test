@@ -9,7 +9,7 @@ import {
   MoreHorizontal,
   Play
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { nanoid } from "nanoid";
 import clsx from "clsx";
 import { Reorder } from "framer-motion";
@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useTimer } from "@/contexts/TimerContext";
 
 const courseColors = {
   CS301: "border-blue-500",
@@ -89,6 +90,8 @@ export default function TodayStudyPlan() {
   const [tasks, setTasks] = useState([]);
   const [suggestions, setSuggestions] = useState(initialSuggestions);
   const [isRecommendationMode, setIsRecommendationMode] = useState(false);
+  const { startTimer, stopTimer, activeTask } = useTimer();
+  const completionTimeouts = useRef({});
 
   // Add/Edit Task Modal State
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
@@ -148,10 +151,69 @@ export default function TodayStudyPlan() {
   };
 
   const toggleTaskComplete = (taskId) => {
+    // Check current state of the task
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const newCompletedState = !task.completed;
+
+    // Update UI immediately
     setTasks(tasks.map(t =>
-      t.id === taskId ? { ...t, completed: !t.completed } : t
+      t.id === taskId ? { ...t, completed: newCompletedState } : t
     ));
+
+    // Handle 5s timeout for deletion
+    if (newCompletedState) {
+      if (completionTimeouts.current[taskId]) clearTimeout(completionTimeouts.current[taskId]);
+
+      completionTimeouts.current[taskId] = setTimeout(() => {
+        // Stop timer if this is the active task
+        // We need to check ref or current state. Since closure might capture old state,
+        // we can safely rely on the task id check against activeTask from context which is updated constantly
+        // However, setTimeout closure captures 'activeTask' from render time.
+        // Best to check inside the setState or just call stopTimer blindly if it matches?
+        // Actually, we can't access latest activeTask in timeout easily without ref.
+        // But since we can't easily check 'activeTask' inside timeout without ref, let's just do it in the next render cycle 
+        // OR better: use the latest activeTask from the component scope is risky if component doesn't re-render (it does though).
+        // Let's rely on standard state update pattern.
+
+        setTasks(currentTasks => {
+          // Check if task still exists and is completed (user might have unchecked it fast)
+          // But wait, the timeout clear logic handles unchecking. 
+          // So if we are here, it means we should delete.
+          return currentTasks.filter(t => t.id !== taskId);
+        });
+      }, 5000); // 5 seconds
+    } else {
+      // User unchecked it, clear timeout
+      if (completionTimeouts.current[taskId]) {
+        clearTimeout(completionTimeouts.current[taskId]);
+        delete completionTimeouts.current[taskId];
+      }
+    }
   };
+
+  // Check if deleted task was the active timer task
+  useEffect(() => {
+    // This effect runs when 'tasks' changes.
+    // If activeTask is no longer in tasks list (meaning it was just deleted), stop the timer.
+    // But need to distinguish between manual delete and list switch? 
+    // Actually, if a task is deleted (removed from 'tasks'), we probably should stop the timer for it regardless of how it was deleted.
+    if (activeTask) {
+      const taskExists = tasks.find(t => t.id === activeTask.id);
+      if (!taskExists) {
+        // Stop timer if active task disappears
+        stopTimer();
+      }
+    }
+  }, [tasks, activeTask, stopTimer]);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(completionTimeouts.current).forEach(clearTimeout);
+    };
+  }, []);
 
   const startRecommendationMode = () => {
     if (suggestions.length === 0) {
@@ -317,7 +379,10 @@ export default function TodayStudyPlan() {
                     {/* Actions */}
                     <div className="flex items-center gap-2">
                       {/* Start Button */}
-                      <button className="flex items-center gap-1 bg-[#1F4E3D] hover:bg-[#163a2e] text-white text-xs font-bold px-3 py-1.5 rounded-md transition-colors">
+                      <button
+                        onClick={() => startTimer(task)}
+                        className="flex items-center gap-1 bg-[#1F4E3D] hover:bg-[#163a2e] text-white text-xs font-bold px-3 py-1.5 rounded-md transition-colors"
+                      >
                         <Play className="w-3 h-3 fill-current" />
                         Start
                       </button>
