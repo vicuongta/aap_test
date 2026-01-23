@@ -58,7 +58,7 @@ export default function FocusClock() {
   return (
     <div className="bg-white rounded-xl border border-gray-100 px-4 py-2.5 flex items-center gap-3">
       {/* Mode Buttons */}
-      <div className="flex items-center gap-1">
+      {/* <div className="flex items-center gap-1">
         <button
           onClick={() => handleModeChange('study')}
           disabled={isRunning}
@@ -98,7 +98,7 @@ export default function FocusClock() {
         >
           Long
         </button>
-      </div>
+      </div> */}
 
       {/* Timer Display */}
       <div className="text-lg font-semibold text-gray-900 mx-2">

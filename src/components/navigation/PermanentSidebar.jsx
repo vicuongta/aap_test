@@ -2,13 +2,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { 
-  LayoutDashboard, 
-  Upload, 
-  Calendar, 
-  CheckSquare, 
+import {
+  LayoutDashboard,
+  Upload,
+  Calendar,
+  CheckSquare,
   BookOpen,
-  Settings, 
+  Settings,
   HelpCircle,
   MessageSquare,
   ChevronLeft,
@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import QBtronLogo from '../../assets/QBtron.png';
 
 const navItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
+  { name: 'Overview', icon: LayoutDashboard, page: 'Overview' },
   { name: 'Courses', icon: BookOpen, page: 'Courses' },
   { name: 'Schedule', icon: Calendar, page: 'WeeklyPlanner' },
   { name: 'Task List', icon: CheckSquare, page: 'TaskList' },
@@ -32,7 +32,7 @@ const bottomNavItems = [
 
 export default function PermanentSidebar({ collapsed, onToggle }) {
   const location = useLocation();
-  
+
   const isActive = (page) => {
     return location.pathname.includes(page);
   };
@@ -45,7 +45,7 @@ export default function PermanentSidebar({ collapsed, onToggle }) {
       {/* Logo Area */}
       <div className={cn("pt-6 pb-4 flex items-center justify-between", collapsed ? "px-4" : "px-6")}>
         <Link to={createPageUrl('Landing')} className="flex items-center gap-2.5">
-          <img 
+          <img
             src={QBtronLogo} // Placeholder logo
             alt="QBtron Logo"
             className="w-8 h-8 object-contain flex-shrink-0"
@@ -67,7 +67,7 @@ export default function PermanentSidebar({ collapsed, onToggle }) {
           {collapsed ? <ChevronRight className="w-4 h-4 text-gray-500" /> : <ChevronLeft className="w-4 h-4 text-gray-500" />}
         </button>
       </div>
-      
+
       {/* Navigation Menu */}
       <nav className={cn("flex-1 pt-4 flex flex-col", collapsed ? "px-2" : "px-4")}>
         <ul className="space-y-1 flex-1">
@@ -79,8 +79,8 @@ export default function PermanentSidebar({ collapsed, onToggle }) {
                 className={cn(
                   "flex items-center gap-3 rounded-xl transition-all duration-200 text-[15px]",
                   collapsed ? "px-3 py-3 justify-center" : "px-4 py-3",
-                  isActive(item.page) 
-                    ? "bg-[#2d6a4f]/10 text-[#2d6a4f] font-medium" 
+                  isActive(item.page)
+                    ? "bg-[#2d6a4f]/10 text-[#2d6a4f] font-medium"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 )}
               >
@@ -104,8 +104,8 @@ export default function PermanentSidebar({ collapsed, onToggle }) {
                 className={cn(
                   "flex items-center gap-3 rounded-xl transition-all duration-200 text-[15px]",
                   collapsed ? "px-3 py-3 justify-center" : "px-4 py-3",
-                  isActive(item.page) 
-                    ? "bg-[#2d6a4f]/10 text-[#2d6a4f] font-medium" 
+                  isActive(item.page)
+                    ? "bg-[#2d6a4f]/10 text-[#2d6a4f] font-medium"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 )}
               >
