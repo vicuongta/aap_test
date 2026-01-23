@@ -11,7 +11,7 @@ export default function Logo({ className = "", showText = true, size = "default"
 
   return (
     <Link to={createPageUrl('Landing')} className={`flex items-center gap-2.5 ${className}`}>
-      <img 
+      <img
         src="/logo.png" // Placeholder logo
         alt="QBtron Logo"
         className={`${sizeClasses[size]} object-contain`}

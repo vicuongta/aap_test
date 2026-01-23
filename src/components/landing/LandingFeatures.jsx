@@ -56,7 +56,7 @@ const cardVariants = {
 
 export default function LandingFeatures() {
   return (
-    <section className="relative overflow-hidden bg-white px-6 py-20 md:py-28">
+    <section className="relative overflow-hidden bg-white px-6 py-20 md:py-24">
       {/* background vignette */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(900px_450px_at_50%_0%,rgba(120,40,40,0.25),transparent_65%)]" />
