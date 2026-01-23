@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { format, startOfWeek, addDays, isSameDay, isToday } from 'date-fns';
 import { ChevronDown, Pencil, Trash2, Clock, CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
@@ -72,6 +72,27 @@ export default function DailyCalendar() {
     return () => clearInterval(timer);
   }, []);
 
+  // Ref for the scrollable timeline container
+  const scrollContainerRef = useRef(null);
+
+  // Auto-scroll to current time on mount and when selectedDate changes to today
+  useEffect(() => {
+    if (scrollContainerRef.current && isToday(selectedDate)) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+
+      // Calculate scroll position (position current time near top with some padding)
+      const scrollPosition = (currentHour * 60) + ((currentMinute / 60) * 60) - 60; // 60px padding from top
+
+      // Scroll to position (minimum 0)
+      scrollContainerRef.current.scrollTo({
+        top: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+      });
+    }
+  }, [selectedDate]);
+
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const selectedDayName = format(selectedDate, 'EEEE').toLowerCase();
@@ -142,6 +163,7 @@ export default function DailyCalendar() {
 
   const positionedEvents = calculateOverlapPositions(allDayEvents);
 
+  // Full 24-hour display
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const rowHeight = 60;
 
@@ -263,13 +285,19 @@ export default function DailyCalendar() {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-white rounded-xl border border-gray-100/50">
-      {/* Header */}
-      <div className="px-3 py-2 border-b border-gray-50 flex items-center justify-between flex-shrink-0">
-        <h3 className="text-xs font-bold text-gray-800">Calendar</h3>
-        <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700">
-          Day <ChevronDown className="w-3 h-3" />
-        </button>
+    <div className="flex flex-col h-full min-h-0 bg-white rounded-xl border border-gray-100/50 overflow-hidden">
+      {/* Solid Header */}
+      <div className="px-4 py-3 flex-shrink-0 rounded-t-xl" style={{ backgroundColor: '#1565C0' }}>
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2 font-semibold text-white">
+            <CalendarIcon className="w-5 h-5 text-white" />
+            Calendar
+          </div>
+          {/* Inverted badge - white bg with blue text */}
+          <span className="flex items-center justify-center text-sm px-3 py-1 rounded-full bg-white text-blue-600 font-medium">
+            {isToday(selectedDate) ? 'Today' : format(selectedDate, 'MMM d')}
+          </span>
+        </div>
       </div>
 
       {/* Week Selector */}
@@ -311,15 +339,15 @@ export default function DailyCalendar() {
       </div>
 
       {/* Timeline View */}
-      <div className="flex-1 overflow-y-auto px-3 py-2">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-3 py-2">
         <div className="relative">
           {currentTimePosition !== null && (
             <div
-              className="absolute left-0 right-0 z-10 flex items-center"
+              className="absolute left-0 right-0 z-20 flex items-center pointer-events-none"
               style={{ top: `${currentTimePosition}px` }}
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-[#2d6a4f] flex-shrink-0"></div>
-              <div className="flex-1 h-0.5 bg-[#2d6a4f]"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0 -ml-1 shadow-sm"></div>
+              <div className="flex-1 h-0.5 bg-red-500"></div>
             </div>
           )}
 

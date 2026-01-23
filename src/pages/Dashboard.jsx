@@ -42,7 +42,7 @@ export default function Dashboard() {
 
           <div className="flex items-center gap-3 ml-auto">
             {/* <FocusClock /> */}
-            <AskQBtronTrigger onClick={handleOpenChat} className="w-[160px] sm:w-[240px] lg:w-[350px]" />
+            <AskQBtronTrigger onClick={handleOpenChat} className="w-[140px] sm:w-[180px] lg:w-[220px]" />
           </div>
         </motion.div>
 
@@ -53,14 +53,13 @@ export default function Dashboard() {
         />
 
         {/* 3 main columns for study plan / coming up / calendar */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 min-h-0">
+        <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
           {/* Col 1: Study Plan */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.25 }}
-            className="flex flex-col h-full min-h-0 overflow-hidden"
-
+            className="flex flex-col flex-1 basis-0 min-w-0 h-full min-h-0 overflow-hidden"
           >
             <TodayStudyPlan />
           </motion.div>
@@ -70,8 +69,7 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.25 }}
-            className="flex flex-col h-full min-h-0 overflow-hidden"
-
+            className="flex flex-col flex-1 basis-0 min-w-0 h-full min-h-0 overflow-hidden"
           >
             <UpcomingDeadlines />
           </motion.div>
@@ -81,8 +79,7 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.25 }}
-            className="flex flex-col h-full min-h-0 overflow-hidden"
-
+            className="flex flex-col flex-1 basis-0 min-w-0 h-full min-h-0 overflow-hidden"
           >
             <DailyCalendar />
           </motion.div>

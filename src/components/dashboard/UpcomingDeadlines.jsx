@@ -74,22 +74,25 @@ export default function UpcomingDeadlines() {
   });
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100/50 flex flex-col h-full min-h-0">
-      {/* Header */}
-      <div className="p-4 pb-2">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2 font-semibold text-gray-700">
-            <CalendarDays className="w-5 h-5 text-yellow-500" />
-            Coming Up
+    <div className="bg-white rounded-xl border border-gray-100/50 flex flex-col h-full min-h-0 overflow-hidden">
+      {/* Solid Header */}
+      {/* Solid Header */}
+      <div className="px-4 py-3 rounded-t-xl" style={{ backgroundColor: '#D97706' }}>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 font-semibold text-white mb-0.5">
+              <CalendarDays className="w-5 h-5 text-white" />
+              Coming Up Deadline
+            </div>
+            <p className="text-xs text-white/80">
+              This list only shows deadlines for the next 7 days.
+            </p>
           </div>
-          {/* Badge moved to right, bold removed from 'deadlines' */}
-          <span className="flex items-center justify-center bg-orange-100 text-orange-600 text-sm px-3 py-1 rounded-full ml-2">
+          {/* Inverted badge - white bg with orange text */}
+          <span className="flex items-center justify-center text-sm px-3 py-1 rounded-full bg-white text-amber-600 font-medium self-center">
             <span className="font-bold mr-1">{upcomingDeadlines.length}</span> deadlines
           </span>
         </div>
-        <p className="text-xs text-gray-500 mt-1">
-          This list only shows deadlines for the next 7 days.
-        </p>
       </div>
 
       {/* Scrollable list */}
@@ -106,7 +109,7 @@ export default function UpcomingDeadlines() {
           return (
             <div
               key={index}
-              className={`flex flex-col p-3 rounded-r-md rounded-l-[4px] bg-white border border-gray-100 border-l-4 ${styles.border} shadow-sm transition-all hover:shadow-md`}
+              className={`flex flex-col p-3 rounded-r-md rounded-l-[4px] bg-white border border-gray-300 border-l-4 ${styles.border} shadow-sm transition-all hover:shadow-md hover:border-gray-400`}
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0 pr-2">
