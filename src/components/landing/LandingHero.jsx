@@ -83,75 +83,101 @@ export default function LandingHero() {
               />
               <div className="absolute inset-0 bg-black/20" />
 
-              {/* Floating Card 1 - Top Left */}
+              {/* Floating Card 1 - Today's Schedule (Top Right) */}
               <motion.div
-                initial={{ opacity: 0, y: 20, x: -10 }}
-                animate={{ opacity: 1, y: 0, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="absolute top-8 left-4 md:top-12 md:left-8 w-48 md:w-56 bg-white rounded-xl shadow-2xl p-4 border border-gray-100"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{
+                  opacity: 1,
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  opacity: { duration: 0.6, delay: 0.2 },
+                  y: { duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.2 }
+                }}
+                className="absolute top-6 right-4 md:top-10 md:right-8 w-52 md:w-60 bg-white rounded-xl shadow-2xl p-4"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center">
+                    <span className="text-purple-600 text-lg">📅</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-gray-800">Today's Schedule</div>
+                    <div className="text-xs text-gray-400">Monday, Jan 13</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="bg-green-50 border-l-4 border-green-500 rounded-r-lg p-2">
+                    <div className="text-sm font-medium text-green-700">CS301 Lecture</div>
+                    <div className="text-xs text-gray-500">9:00 AM - 10:30 AM</div>
+                  </div>
+                  <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-lg p-2">
+                    <div className="text-sm font-medium text-blue-700">Study Session</div>
+                    <div className="text-xs text-gray-500">2:00 PM - 4:00 PM</div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Floating Card 2 - Upcoming Deadlines (Left Middle) */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  y: [0, -6, 0],
+                }}
+                transition={{
+                  opacity: { duration: 0.6, delay: 0.35 },
+                  x: { duration: 0.6, delay: 0.35 },
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+                }}
+                className="absolute top-1/3 left-2 md:left-6 w-56 md:w-64 bg-white rounded-xl shadow-2xl p-4"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <span className="text-blue-600 text-lg">☑️</span>
+                  </div>
+                  <div className="text-sm font-semibold text-gray-800">Upcoming Deadlines</div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-sm font-medium text-blue-600">BST Assignment</div>
+                      <div className="text-xs text-gray-400">CS301</div>
+                    </div>
+                    <span className="text-xs font-semibold text-orange-500">2 days</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-sm font-medium text-blue-600">Linear Algebra Quiz</div>
+                      <div className="text-xs text-gray-400">MATH201</div>
+                    </div>
+                    <span className="text-xs font-semibold text-green-500">5 days</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Floating Card 3 - Focus Timer (Bottom Right) */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{
+                  opacity: 1,
+                  y: [0, -10, 0],
+                }}
+                transition={{
+                  opacity: { duration: 0.6, delay: 0.5 },
+                  y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }
+                }}
+                className="absolute bottom-10 right-8 md:bottom-16 md:right-12 w-44 md:w-52 bg-white rounded-xl shadow-2xl p-5"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">Q</span>
+                  <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center">
+                    <span className="text-purple-600 text-sm">⏱️</span>
                   </div>
-                  <span className="text-sm font-semibold text-gray-800">Today's Tasks</span>
+                  <span className="text-sm font-semibold text-gray-700">Focus Timer</span>
                 </div>
-                <div className="space-y-2">
-                  <div className="h-2 bg-gray-200 rounded w-full" />
-                  <div className="h-2 bg-gray-200 rounded w-3/4" />
-                  <div className="h-2 bg-green-200 rounded w-5/6" />
-                  <div className="h-2 bg-gray-200 rounded w-2/3" />
-                </div>
-              </motion.div>
-
-              {/* Floating Card 2 - Center */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.35 }}
-                className="absolute top-1/3 left-1/2 -translate-x-1/2 w-52 md:w-64 bg-white rounded-xl shadow-2xl p-4 border border-orange-100"
-                style={{ boxShadow: '0 25px 50px -12px rgba(234, 88, 12, 0.25)' }}
-              >
-                <div className="text-xs font-semibold text-orange-500 mb-2">Coming Up</div>
-                <div className="text-sm font-semibold text-gray-800 mb-3">Class Schedule</div>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600">Math 101</span>
-                    <span className="text-xs text-orange-500 font-medium">Tomorrow</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600">Physics Lab</span>
-                    <span className="text-xs text-orange-500 font-medium">Tomorrow</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600">Essay Due</span>
-                    <span className="text-xs text-red-500 font-medium">3 days</span>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating Card 3 - Bottom Right */}
-              <motion.div
-                initial={{ opacity: 0, y: 20, x: 10 }}
-                animate={{ opacity: 1, y: 0, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="absolute bottom-12 right-4 md:bottom-16 md:right-8 w-44 md:w-52 bg-white rounded-xl shadow-2xl p-4 border border-gray-100"
-              >
-                <div className="text-xs font-semibold text-gray-500 mb-2">Calendar</div>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs">
-                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-                    <div key={i} className="text-gray-400 font-medium">{d}</div>
-                  ))}
-                  {[...Array(31)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-5 h-5 flex items-center justify-center rounded text-xs ${i === 14 ? 'bg-green-600 text-white font-bold' :
-                          i === 18 ? 'bg-red-500 text-white font-bold' : 'text-gray-600'
-                        }`}
-                    >
-                      {i + 1}
-                    </div>
-                  ))}
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-gray-800 tracking-tight">25:00</div>
+                  <div className="text-xs text-gray-400 mt-1">Study mode</div>
                 </div>
               </motion.div>
             </motion.div>
