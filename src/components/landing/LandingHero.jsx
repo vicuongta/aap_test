@@ -83,101 +83,130 @@ export default function LandingHero() {
               />
               <div className="absolute inset-0 bg-black/20" />
 
-              {/* Floating Card 1 - Today's Schedule (Top Right) */}
+              {/* Floating Card 1 - Study Plan (Green) */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: 1,
-                  y: [0, -8, 0],
-                }}
+                animate={{ opacity: 1, y: [0, -10, 0] }}
+                whileHover={{ scale: 1.02, y: 0 }}
                 transition={{
                   opacity: { duration: 0.6, delay: 0.2 },
-                  y: { duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.2 }
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                  scale: { duration: 0.2 }
                 }}
-                className="absolute top-6 right-4 md:top-10 md:right-8 w-52 md:w-60 bg-white rounded-xl shadow-2xl p-4"
+                className="absolute top-4 left-4 md:top-8 md:left-8 w-56 md:w-64 bg-white rounded-2xl shadow-2xl p-5 z-30 cursor-pointer hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.4)] transition-shadow duration-200"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center">
-                    <span className="text-purple-600 text-lg">📅</span>
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-gray-800">Today's Schedule</div>
-                    <div className="text-xs text-gray-400">Monday, Jan 13</div>
-                  </div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-bold text-gray-800">Study Plan</span>
+                  <span className="bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full">Active</span>
                 </div>
-                <div className="space-y-2">
-                  <div className="bg-green-50 border-l-4 border-green-500 rounded-r-lg p-2">
-                    <div className="text-sm font-medium text-green-700">CS301 Lecture</div>
-                    <div className="text-xs text-gray-500">9:00 AM - 10:30 AM</div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="text-sm font-medium text-gray-800">Review CS301 Notes</div>
+                      <div className="text-xs text-gray-400">30 min</div>
+                    </div>
+                    <button className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">Start</button>
                   </div>
-                  <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-lg p-2">
-                    <div className="text-sm font-medium text-blue-700">Study Session</div>
-                    <div className="text-xs text-gray-500">2:00 PM - 4:00 PM</div>
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="text-sm font-medium text-gray-800">Practice Problems</div>
+                      <div className="text-xs text-gray-400">45 min</div>
+                    </div>
+                    <button className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">Start</button>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="text-sm font-medium text-gray-800">Read Chapter 5</div>
+                      <div className="text-xs text-gray-400">1 hr</div>
+                    </div>
+                    <button className="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">Start</button>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Floating Card 2 - Upcoming Deadlines (Left Middle) */}
+              {/* Floating Card 2 - Deadlines (Orange) */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  y: [0, -6, 0],
-                }}
+                animate={{ opacity: 1, x: 0, y: [0, -10, 0] }}
+                whileHover={{ scale: 1.02, y: 0 }}
                 transition={{
                   opacity: { duration: 0.6, delay: 0.35 },
                   x: { duration: 0.6, delay: 0.35 },
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+                  y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.3 },
+                  scale: { duration: 0.2 }
                 }}
-                className="absolute top-1/3 left-2 md:left-6 w-56 md:w-64 bg-white rounded-xl shadow-2xl p-4"
+                className="absolute top-1/4 right-4 md:right-8 w-56 md:w-64 bg-white rounded-2xl shadow-2xl p-5 z-20 cursor-pointer hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.4)] transition-shadow duration-200"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 text-lg">☑️</span>
-                  </div>
-                  <div className="text-sm font-semibold text-gray-800">Upcoming Deadlines</div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-bold text-gray-800">Deadlines</span>
+                  <span className="bg-orange-500 text-white text-xs font-semibold px-3 py-1 rounded-full">3 Due</span>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
                     <div>
-                      <div className="text-sm font-medium text-blue-600">BST Assignment</div>
+                      <div className="text-sm font-medium text-gray-800">BST Assignment</div>
                       <div className="text-xs text-gray-400">CS301</div>
                     </div>
-                    <span className="text-xs font-semibold text-orange-500">2 days</span>
+                    <span className="text-xs font-bold text-red-500">2 days</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
                     <div>
-                      <div className="text-sm font-medium text-blue-600">Linear Algebra Quiz</div>
+                      <div className="text-sm font-medium text-gray-800">Linear Algebra Quiz</div>
                       <div className="text-xs text-gray-400">MATH201</div>
                     </div>
-                    <span className="text-xs font-semibold text-green-500">5 days</span>
+                    <span className="text-xs font-bold text-red-500">5 days</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2">
+                    <div>
+                      <div className="text-sm font-medium text-gray-800">Essay Draft</div>
+                      <div className="text-xs text-gray-400">ENG102</div>
+                    </div>
+                    <span className="text-xs font-bold text-red-500">7 days</span>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Floating Card 3 - Focus Timer (Bottom Right) */}
+              {/* Floating Card 3 - Calendar (Blue) */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: 1,
-                  y: [0, -10, 0],
-                }}
+                animate={{ opacity: 1, y: [0, -10, 0] }}
+                whileHover={{ scale: 1.02, y: 0 }}
                 transition={{
                   opacity: { duration: 0.6, delay: 0.5 },
-                  y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }
+                  y: { duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.6 },
+                  scale: { duration: 0.2 }
                 }}
-                className="absolute bottom-10 right-8 md:bottom-16 md:right-12 w-44 md:w-52 bg-white rounded-xl shadow-2xl p-5"
+                className="absolute bottom-6 left-1/4 md:left-1/4 md:bottom-10 w-64 md:w-72 bg-white rounded-2xl shadow-2xl p-5 z-10 cursor-pointer hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.4)] transition-shadow duration-200"
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center">
-                    <span className="text-purple-600 text-sm">⏱️</span>
-                  </div>
-                  <span className="text-sm font-semibold text-gray-700">Focus Timer</span>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-bold text-gray-800">Today's Schedule</span>
+                  <span className="bg-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">Mon 13</span>
                 </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-gray-800 tracking-tight">25:00</div>
-                  <div className="text-xs text-gray-400 mt-1">Study mode</div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="text-xs text-gray-400 w-14">9:00 AM</div>
+                    <div className="flex-1 bg-blue-100 border-l-4 border-blue-500 rounded-r-lg p-2">
+                      <div className="text-xs font-medium text-blue-700">CS301 Lecture</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-xs text-gray-400 w-14">11:00 AM</div>
+                    <div className="flex-1 bg-purple-100 border-l-4 border-purple-500 rounded-r-lg p-2">
+                      <div className="text-xs font-medium text-purple-700">MATH201 Quiz</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-xs text-gray-400 w-14">2:00 PM</div>
+                    <div className="flex-1 bg-green-100 border-l-4 border-green-500 rounded-r-lg p-2">
+                      <div className="text-xs font-medium text-green-700">Study Session</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-xs text-gray-400 w-14">4:30 PM</div>
+                    <div className="flex-1 bg-orange-100 border-l-4 border-orange-500 rounded-r-lg p-2">
+                      <div className="text-xs font-medium text-orange-700">Office Hours</div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
