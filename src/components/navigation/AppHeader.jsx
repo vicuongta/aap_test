@@ -21,13 +21,13 @@ export default function AppHeader({ user, title, breadcrumb }) {
       <div className="flex items-center gap-4">
         {/* Timer Display */}
         {isRunning && (
-          <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5">
-            <Timer className="w-4 h-4 text-green-600" />
+          <div className="flex items-center gap-2 bg-amber-50/50 border-2 border-amber-400 rounded-lg px-3 py-1.5 shadow-sm">
+            <Timer className="w-4 h-4 text-green-900" />
             <div className="flex flex-col">
-              <span className="text-xs text-green-700 font-medium truncate max-w-[120px]">
+              <span className="text-xs text-green-800 font-medium truncate max-w-[120px]">
                 {activeTask?.title}
               </span>
-              <span className="text-sm font-bold text-green-800 tabular-nums">
+              <span className="text-xl font-bold text-green-900 tabular-nums">
                 {formatTime(remainingSeconds)}
               </span>
             </div>
@@ -35,7 +35,7 @@ export default function AppHeader({ user, title, breadcrumb }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-100"
+                className="h-7 w-7 text-green-900 hover:text-green-950 hover:bg-amber-200/50"
                 onClick={togglePause}
               >
                 {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
@@ -43,7 +43,7 @@ export default function AppHeader({ user, title, breadcrumb }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-red-500 hover:text-red-600 hover:bg-red-100"
+                className="h-7 w-7 text-green-900 hover:text-red-700 hover:bg-red-100/50"
                 onClick={stopTimer}
               >
                 <X className="w-4 h-4" />
@@ -54,13 +54,13 @@ export default function AppHeader({ user, title, breadcrumb }) {
 
         {/* Timer Complete State */}
         {activeTask && remainingSeconds === 0 && (
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
-            <Timer className="w-4 h-4 text-amber-600" />
-            <span className="text-sm font-medium text-amber-700">Time's up!</span>
+          <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
+            <Timer className="w-4 h-4 text-yellow-600" />
+            <span className="text-sm font-bold text-yellow-700">Time's up!</span>
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 text-amber-600 hover:bg-amber-100"
+              className="h-7 w-7 text-yellow-600 hover:bg-yellow-100"
               onClick={stopTimer}
             >
               <X className="w-4 h-4" />

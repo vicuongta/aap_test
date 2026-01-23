@@ -494,7 +494,7 @@ export default function TodayStudyPlan() {
             <Button
               onClick={handleAddTask}
               disabled={!isFormValid}
-              className="bg-[#1F4E3D] hover:bg-[#163a2e]"
+              className={editingTaskId ? "bg-green-700 hover:bg-green-800 text-white" : "bg-[#1F4E3D] hover:bg-[#163a2e] text-white"}
             >
               {editingTaskId ? "Save Changes" : "Add Task"}
             </Button>

@@ -289,9 +289,14 @@ export default function DailyCalendar() {
       {/* Solid Header */}
       <div className="px-4 py-3 flex-shrink-0 rounded-t-xl" style={{ backgroundColor: '#1565C0' }}>
         <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2 font-semibold text-white">
-            <CalendarIcon className="w-5 h-5 text-white" />
-            Calendar
+          <div>
+            <div className="flex items-center gap-2 font-semibold text-white">
+              <CalendarIcon className="w-5 h-5 text-white" />
+              Calendar
+            </div>
+            <p className="text-xs text-blue-100 font-medium ml-7 opacity-90">
+              Only shows fixed schedule, events and deadlines
+            </p>
           </div>
           {/* Inverted badge - white bg with blue text */}
           <span className="flex items-center justify-center text-sm px-3 py-1 rounded-full bg-white text-blue-600 font-medium">
@@ -576,7 +581,7 @@ export default function DailyCalendar() {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button onClick={handleSave}>Save</Button>
+              <Button onClick={handleSave} className="bg-green-700 hover:bg-green-800 text-white">Save</Button>
             </div>
           </DialogFooter>
         </DialogContent>
