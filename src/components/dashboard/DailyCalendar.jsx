@@ -343,7 +343,7 @@ export default function DailyCalendar() {
         <div className="relative">
           {currentTimePosition !== null && (
             <div
-              className="absolute left-0 right-0 z-20 flex items-center pointer-events-none"
+              className="absolute left-0 right-0 z-10 flex items-center pointer-events-none"
               style={{ top: `${currentTimePosition}px` }}
             >
               <div className="w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0 -ml-1 shadow-sm"></div>

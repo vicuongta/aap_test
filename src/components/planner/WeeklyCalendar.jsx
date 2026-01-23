@@ -363,9 +363,9 @@ export default function WeeklyCalendar({ currentWeek }) {
                 ))}
 
                 {/* Current time indicator */}
-                {isDayToday && currentTimePosition !== null && (
+                {/* {isDayToday && currentTimePosition !== null && (
                   <div
-                    className="absolute left-0 right-0 z-10 pointer-events-none"
+                    className="absolute left-0 right-0 z-0 pointer-events-none"
                     style={{ top: `${currentTimePosition}px` }}
                   >
                     <div className="flex items-center">
@@ -373,7 +373,7 @@ export default function WeeklyCalendar({ currentWeek }) {
                       <div className="flex-1 h-0.5 bg-[#2d6a4f]" />
                     </div>
                   </div>
-                )}
+                )} */}
 
                 {/* Schedule blocks */}
                 {(() => {
