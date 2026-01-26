@@ -31,37 +31,24 @@ const resources = [
     title: "Getting started",
     items: [
       { label: "Home", desc: "Start organizing your semester today", icon: Home, href: "#" },
-      { label: "See what QBTron can do for you", desc: "Learn QBTron’s tools and connect it to tasks", icon: Sparkles, href: "#" },
-      { label: "Blog", desc: "Read our latest thoughts on studying", icon: BookOpen, href: "#" },
+      { label: "See what QBTron can do", desc: "Learn QBTron and connect to tasks", icon: Sparkles, href: "#" },
       { label: "Contact", desc: "Get in touch with our team", icon: Mail, href: "#" },
     ],
   },
   {
     title: "Learning tools",
     items: [
-      { label: "Pomodoro timer", desc: "Focus sessions built into your workflow", icon: Timer, href: "#" },
       { label: "AI assistant", desc: "Get study suggestions when you need", icon: Bot, href: "#" },
       { label: "Task tracking", desc: "Break tasks into manageable steps", icon: ListChecks, href: "#" },
       { label: "Schedule view", desc: "See your week at a glance", icon: CalendarDays, href: "#" },
     ],
   },
   {
-    title: "Support",
+    title: "General",
     items: [
-      { label: "Documentation", desc: "Learn how to use QBTron", icon: FileText, href: "#" },
       { label: "FAQ", desc: "Find answers to common questions", icon: HelpCircle, href: "#" },
-      { label: "Guides", desc: "Step-by-step tutorials for success", icon: Map, href: "#" },
-      { label: "Help center", desc: "Browse our complete knowledge base", icon: LifeBuoy, href: "#" },
-    ],
-  },
-  {
-    title: "Company",
-    items: [
-      { label: "About", desc: "", icon: Building2, href: "#" },
-      { label: "Team", desc: "", icon: Users, href: "#" },
-      { label: "Careers", desc: "", icon: Briefcase, href: "#" },
-      { label: "Press", desc: "", icon: Newspaper, href: "#" },
-      { label: "Partners", desc: "", icon: Handshake, href: "#" },
+      { label: "Team", desc: "Get to know the team behind QBTron", icon: Users, href: "#" },
+      { label: "Partners", desc: "Partner with QBTron for your institution", icon: Handshake, href: "#" },
     ],
   },
 ];
@@ -105,10 +92,10 @@ export default function Navbar() {
 
             <div className="hidden items-center gap-8 text-md text-white/80 md:flex">
               <a href="#" className="hover:text-white">
-                Features
+                Blog
               </a>
               <a href="#" className="hover:text-white">
-                Blog
+                Features
               </a>
               <a href="#" className="hover:text-white">
                 Contact
@@ -172,7 +159,7 @@ export default function Navbar() {
               open ? "scale-100" : "scale-[0.98]",
             ].join(" ")}
           >
-            <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
               {resources.map((col) => (
                 <div key={col.title}>
                   <div className="mb-4 text-[14px] font-semibold uppercase tracking-wider text-white/70">
@@ -195,7 +182,7 @@ export default function Navbar() {
                           <div className="min-w-0">
                             <div className="text-md font-semibold text-white">{it.label}</div>
                             {it.desc ? (
-                              <div className="mt-1 text-[13px] leading-snug text-white/55">
+                              <div className="mt-1 text-[13px] italic leading-snug text-white/55">
                                 {it.desc}
                               </div>
                             ) : null}

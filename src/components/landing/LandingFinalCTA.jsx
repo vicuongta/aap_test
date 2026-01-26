@@ -29,13 +29,7 @@ export default function LandingFinalCTA() {
               onClick={() => navigate(createPageUrl('Dashboard'))}
               className="bg-white text-[#1b4332] hover:bg-gray-100 px-8 py-6 text-base font-semibold rounded-lg"
             >
-              Start
-            </Button>
-            <Button
-              variant="outline"
-              className="bg-transparent border-2 border-white/30 text-white hover:bg-white/10 px-8 py-6 text-base font-semibold rounded-lg"
-            >
-              Demo
+              Start free now
             </Button>
           </div>
         </motion.div>

@@ -17,7 +17,7 @@ export default function LandingHero() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-neutral-950 min-h-[85vh] flex items-start justify-center" style={{ paddingTop: '9vh' }}>
+    <section className="relative overflow-hidden bg-neutral-950 min-h-[85vh] flex items-start justify-center" style={{ paddingTop: '6vh' }}>
       {/* background vignette */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(900px_450px_at_50%_0%,rgba(120,40,40,0.30),transparent_65%)]" />
@@ -48,7 +48,7 @@ export default function LandingHero() {
                   track your courses, and stay focused with AI that understands your schedule.
                 </p>
 
-                <div className="mt-8 flex items-center gap-3">
+                <div className="mt-8 flex items-center gap-5">
                   <Button
                     size="lg"
                     onClick={() => navigate(createPageUrl("Dashboard"))}

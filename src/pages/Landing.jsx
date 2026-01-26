@@ -19,8 +19,8 @@ export default function Landing() {
         <LandingFeatures />
         <LandingColorCoded />
         <LandingFocusTimer />
-        <LandingStats />
-        <LandingTestimonials />
+        {/* <LandingStats />
+        <LandingTestimonials /> */}
         <LandingFinalCTA />
         <LandingFAQ />
       </main>
