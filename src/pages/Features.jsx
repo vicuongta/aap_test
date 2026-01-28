@@ -3,34 +3,37 @@
 import React from 'react';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/landing/Footer';
-import { Bot, CheckCircle2, Calendar, ArrowRight } from 'lucide-react';
+import { Bot, CheckCircle2, Calendar, ArrowRight, Zap, Target, Clock, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import demoVideo from '@/assets/demo.mp4';
 
 // Helper to render visuals for each feature
 const FeatureVisual = ({ type }) => {
     if (type === 'ai') {
         return (
-            <div className="relative w-full aspect-video bg-neutral-900/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm p-6 flex flex-col gap-4">
-                {/* Chat Interface Mockup */}
-                <div className="flex gap-3">
+            <div className="relative w-full aspect-video bg-neutral-950 border border-white/10 rounded-xl overflow-hidden shadow-lg p-6 flex flex-col gap-4">
+                {/* Gradient overlay like navbar */}
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_300px_at_50%_0%,rgba(120,40,40,0.35),transparent_60%)]" />
+                {/* Chat Interface Mockup - can be changed later */}
+                <div className="relative flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
                         <Bot className="w-5 h-5 text-blue-400" />
                     </div>
-                    <div className="bg-neutral-800 rounded-2xl rounded-tl-none p-4 max-w-[80%] border border-white/5">
+                    <div className="bg-neutral-800 rounded-2xl rounded-tl-none p-4 max-w-[80%] border border-white/10">
                         <p className="text-sm text-neutral-300">How can I help you organize your schedule today?</p>
                     </div>
                 </div>
-                <div className="flex gap-3 flex-row-reverse">
-                    <div className="w-8 h-8 rounded-full bg-neutral-700/50 shrink-0" />
+                <div className="relative flex gap-3 flex-row-reverse">
+                    <div className="w-8 h-8 rounded-full bg-neutral-700 shrink-0" />
                     <div className="bg-[#2d6a4f]/20 rounded-2xl rounded-tr-none p-4 max-w-[80%] border border-[#2d6a4f]/30">
                         <p className="text-sm text-neutral-200">I have a math quiz on Friday and need to study.</p>
                     </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="relative flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
                         <Bot className="w-5 h-5 text-blue-400" />
                     </div>
-                    <div className="bg-neutral-800 rounded-2xl rounded-tl-none p-4 max-w-[80%] border border-white/5">
+                    <div className="bg-neutral-800 rounded-2xl rounded-tl-none p-4 max-w-[80%] border border-white/10">
                         <p className="text-sm text-neutral-300">I've blocked out 2 hours tomorrow morning for "Linear Algebra Review". Should I add a reminder?</p>
                     </div>
                 </div>
@@ -39,9 +42,11 @@ const FeatureVisual = ({ type }) => {
     }
     if (type === 'tasks') {
         return (
-            <div className="relative w-full aspect-video bg-neutral-900/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm p-6">
+            <div className="relative w-full aspect-video bg-neutral-950 border border-white/10 rounded-xl overflow-hidden shadow-lg p-6">
+                {/* Gradient overlay like navbar */}
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_300px_at_50%_0%,rgba(120,40,40,0.35),transparent_60%)]" />
                 {/* Task List Mockup */}
-                <div className="space-y-3">
+                <div className="relative space-y-3">
                     {[
                         { text: "Complete BST Assignment", tag: "High", color: "text-red-400 bg-red-400/10" },
                         { text: "Read Chapter 4 History", tag: "Medium", color: "text-orange-400 bg-orange-400/10" },
@@ -68,19 +73,21 @@ const FeatureVisual = ({ type }) => {
     }
     if (type === 'schedule') {
         return (
-            <div className="relative w-full aspect-video bg-neutral-900/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm p-6">
+            <div className="relative w-full aspect-video bg-neutral-950 border border-white/10 rounded-xl overflow-hidden shadow-lg p-6">
+                {/* Gradient overlay like navbar */}
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_300px_at_50%_0%,rgba(120,40,40,0.35),transparent_60%)]" />
                 {/* Calendar Mockup */}
-                <div className="grid grid-cols-7 gap-2 mb-4 text-center">
+                <div className="relative grid grid-cols-7 gap-2 mb-4 text-center">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(d => <span key={d} className="text-xs text-neutral-500">{d}</span>)}
                 </div>
-                <div className="grid grid-cols-7 gap-2">
+                <div className="relative grid grid-cols-7 gap-2">
                     {Array.from({ length: 14 }).map((_, i) => (
-                        <div key={i} className={`aspect-square rounded-md flex items-center justify-center text-xs ${i === 4 ? 'bg-[#2d6a4f] text-white' : 'text-neutral-400 bg-neutral-800/30'}`}>
+                        <div key={i} className={`aspect-square rounded-md flex items-center justify-center text-xs ${i === 4 ? 'bg-[#2d6a4f] text-white' : 'text-neutral-400 bg-neutral-800/50'}`}>
                             {10 + i}
                         </div>
                     ))}
                 </div>
-                <div className="mt-4 p-3 bg-neutral-800/50 rounded-lg border-l-2 border-[#2d6a4f]">
+                <div className="relative mt-4 p-3 bg-neutral-800/50 rounded-lg border-l-2 border-[#2d6a4f]">
                     <div className="text-xs text-neutral-400">10:00 AM - 11:30 AM</div>
                     <div className="text-sm font-medium text-white">Advanced Calculus</div>
                 </div>
@@ -117,23 +124,39 @@ const features = [
 
 const Features = () => {
     return (
-        <div className="min-h-screen bg-neutral-950 flex flex-col">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
 
             <main className="flex-grow relative">
-                {/* Background Vignette */}
+                {/* Background Gradient - top to bottom with color palette */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(45,106,79,0.15),transparent_70%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#F5F5F0_0%,#FFF8F0_100%)]" />
                 </div>
 
-                <div className="max-w-6xl mx-auto px-6 pt-24 pb-2 relative z-10">
+                <div className="max-w-6xl mx-auto px-6 pt-20 pb-2 relative z-10">
                     {/* Page Heading */}
-                    <div className="text-center mb-20">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight">
-                            Smarter Tools for <br /> <span className="text-white/50">Smarter Students</span>
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900 tracking-tight">
+                            Smarter Tools for <br /> <span className="text-3xl md:text-5xl text-gray-500">Smarter Students</span>
                         </h1>
-                        <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed">
                             QBtron helps you stay organized and on top of your studies with AI-powered planning tools designed for the modern student.
+                        </p>
+                    </div>
+
+                    {/* Demo Video Section */}
+                    <div className="mb-16">
+                        <video
+                            src={demoVideo}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            controls
+                            className="w-full max-w-5xl mx-auto rounded-xl border border-gray-200 shadow-2xl"
+                        />
+                        <p className="mt-8 text-center max-w-3xl mx-auto text-lg text-gray-700 italic">
+                            Experience the power of QBtron — your AI-powered academic companion that seamlessly integrates smart scheduling, intelligent task prioritization, and progress tracking to help you stay ahead of your studies.
                         </p>
                     </div>
 
@@ -154,16 +177,13 @@ const Features = () => {
 
                                     {/* Text Side */}
                                     <div className="w-full md:w-1/2 flex flex-col items-start text-left">
-                                        <div className="bg-neutral-900/80 p-3 rounded-xl border border-white/10 inline-flex mb-6">
+                                        <div className="bg-gray-100 p-3 rounded-xl border border-gray-200 inline-flex mb-6">
                                             <feature.icon className="w-6 h-6 text-[#40916c]" />
                                         </div>
-                                        <h3 className="text-3xl font-bold text-white mb-4">{feature.title}</h3>
-                                        <p className="text-lg text-neutral-400 leading-relaxed mb-8">
+                                        <h3 className="text-3xl font-bold text-gray-900 mb-4">{feature.title}</h3>
+                                        <p className="text-lg text-gray-700 leading-relaxed mb-8">
                                             {feature.description}
                                         </p>
-                                        <Button variant="link" className="text-[#40916c] hover:text-[#2d6a4f] p-0 text-base">
-                                            Learn more <ArrowRight className="w-4 h-4 ml-2" />
-                                        </Button>
                                     </div>
                                 </div>
                             )
@@ -171,8 +191,8 @@ const Features = () => {
                     </div>
 
                     {/* Call to Action */}
-                    <div className="text-center mt-24 py-16 border-t border-neutral-900">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to organize your academic life?</h2>
+                    <div className="text-center mt-24 py-16 border-t border-gray-200">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Ready to organize your academic life?</h2>
                         <div className="flex justify-center gap-4">
                             <Button className="bg-[#2d6a4f] hover:bg-[#2d6a4f]/90 text-white rounded-full px-8 py-6 text-lg">
                                 Get Started Free
@@ -181,6 +201,9 @@ const Features = () => {
                     </div>
                 </div>
             </main>
+
+            {/* Page to footer transition gradient */}
+            <div className="h-4 bg-[linear-gradient(to_bottom,#FFF8F0_0%,#0a0a0a_100%)]" />
             <Footer />
         </div>
     );

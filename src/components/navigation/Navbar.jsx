@@ -85,7 +85,7 @@ export default function Navbar() {
         <div className="relative flex h-14 w-full items-center justify-between px-6">
           {/* Left */}
           <div className="flex items-center gap-10">
-            <a href="#" className="flex items-center justify-center gap-2">
+            <a href="/" className="flex items-center justify-center gap-2">
               <img src={QBtronLogo} alt="QBTron" className="h-7 w-auto" />
               <span className="text-2xl font-semibold italic tracking-tight">QBTron</span>
             </a>
@@ -94,7 +94,7 @@ export default function Navbar() {
               <a href="#" className="hover:text-white">
                 Blog
               </a>
-              <a href="#" className="hover:text-white">
+              <a href="/Features" className="hover:text-white">
                 Features
               </a>
               <a href="#" className="hover:text-white">
@@ -119,7 +119,7 @@ export default function Navbar() {
           {/* Right */}
           <div className="flex items-center gap-2">
             <Button size="lg" asChild className="rounded-full" style={{ backgroundColor: "#0A0A0A" }}>
-              <a href="#" className="text-white/80 hover:text-white">
+              <a href="/SignIn" className="text-white/80 hover:text-white">
                 Sign in
               </a>
             </Button>

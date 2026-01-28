@@ -12,7 +12,10 @@ import Home from './pages/Home';
 import Landing from './pages/Landing';
 import ManageAccount from './pages/ManageAccount';
 import Privacy from './pages/Privacy';
+import ResetPassword from './pages/ResetPassword';
 import Settings from './pages/Settings';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 import TaskExtraction from './pages/TaskExtraction';
 import TaskList from './pages/TaskList';
 import Terms from './pages/Terms';
@@ -37,7 +40,10 @@ export const PAGES = {
     "Landing": Landing,
     "ManageAccount": ManageAccount,
     "Privacy": Privacy,
+    "ResetPassword": ResetPassword,
     "Settings": Settings,
+    "SignIn": SignIn,
+    "SignUp": SignUp,
     "TaskExtraction": TaskExtraction,
     "TaskList": TaskList,
     "Terms": Terms,

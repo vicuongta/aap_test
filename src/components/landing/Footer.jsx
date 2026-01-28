@@ -25,13 +25,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-neutral-950">
-      {/* Divider */}
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="border-t border-neutral-800" />
-      </div>
-
       {/* Main Footer Content */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="max-w-6xl mx-auto py-8">
         <div className="flex flex-col md:flex-row justify-between gap-12">
           {/* Left Section - Brand */}
           <div className="max-w-sm">
