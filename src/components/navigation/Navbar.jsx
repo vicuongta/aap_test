@@ -1,6 +1,7 @@
 // @ts-nocheck
 // Navbar.jsx
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   ChevronDown,
   Home,
@@ -46,7 +47,7 @@ const resources = [
   {
     title: "General",
     items: [
-      { label: "FAQ", desc: "Find answers to common questions", icon: HelpCircle, href: "#" },
+      { label: "FAQ", desc: "Find answers to common questions", icon: HelpCircle, href: "/#faq" },
       { label: "Team", desc: "Get to know the team behind QBTron", icon: Users, href: "#" },
       { label: "Partners", desc: "Partner with QBTron for your institution", icon: Handshake, href: "#" },
     ],
@@ -56,6 +57,61 @@ const resources = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const headerRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const slowScrollTo = (element) => {
+    const navbarHeight = 250; // Safety buffer
+    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = 1200; // Slower scroll
+    let startTime = null;
+
+    // Ease in-out cubic
+    const ease = (t) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+
+    const animation = (currentTime) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+
+      window.scrollTo(0, startPosition + distance * ease(progress));
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      }
+    };
+    requestAnimationFrame(animation);
+  };
+
+  const handleLinkClick = (e, href) => {
+    if (href.includes("#")) {
+      e.preventDefault();
+      setOpen(false); // Close dropdown immediately
+
+      const [path, hash] = href.split("#");
+      const targetPath = path || "/";
+      const isSamePage = location.pathname === targetPath || (targetPath === "/" && location.pathname === "/");
+
+      if (isSamePage) {
+        // Wait for dropdown to start closing
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) slowScrollTo(el);
+        }, 300);
+      } else {
+        navigate(targetPath);
+        // Wait for navigation and potential layout shifts
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) slowScrollTo(el);
+        }, 500);
+      }
+    } else {
+      setOpen(false);
+    }
+  };
 
   useEffect(() => {
     const onDown = (e) => {
@@ -92,7 +148,7 @@ export default function Navbar() {
 
             <div className="hidden items-center gap-8 text-md text-white/80 md:flex">
               <a href="#" className="hover:text-white">
-                Blog
+                About Us
               </a>
               <a href="/Features" className="hover:text-white">
                 Features
@@ -173,6 +229,7 @@ export default function Navbar() {
                         <a
                           key={it.label}
                           href={it.href}
+                          onClick={(e) => handleLinkClick(e, it.href)}
                           className="group flex gap-3 rounded-lg p-3 hover:bg-white/5"
                         >
                           <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5">

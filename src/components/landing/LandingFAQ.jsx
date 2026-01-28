@@ -33,7 +33,7 @@ export default function LandingFAQ() {
     };
 
     return (
-        <section className="bg-white py-20 md:py-24 px-6 border-t border-gray-100">
+        <section id="faq" className="bg-white py-20 md:py-24 px-6 border-t border-gray-100">
             <div className="max-w-3xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
