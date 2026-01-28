@@ -38,9 +38,9 @@ const resources = [
   {
     title: "Learning tools",
     items: [
-      { label: "AI assistant", desc: "Get study suggestions when you need", icon: Bot, href: "#" },
-      { label: "Task tracking", desc: "Break tasks into manageable steps", icon: ListChecks, href: "#" },
-      { label: "Schedule view", desc: "See your week at a glance", icon: CalendarDays, href: "#" },
+      { label: "AI assistant", desc: "Get study suggestions when you need", icon: Bot, href: "/Features#ai-assistant" },
+      { label: "Task tracking", desc: "Break tasks into manageable steps", icon: ListChecks, href: "/Features#task-tracking" },
+      { label: "Schedule view", desc: "See your week at a glance", icon: CalendarDays, href: "/Features#schedule-view" },
     ],
   },
   {
@@ -176,7 +176,7 @@ export default function Navbar() {
                           className="group flex gap-3 rounded-lg p-3 hover:bg-white/5"
                         >
                           <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5">
-                            <Icon className="h-6 w-6text-white/80" />
+                            <Icon className="h-6 w-6 text-white/80" />
                           </div>
 
                           <div className="min-w-0">

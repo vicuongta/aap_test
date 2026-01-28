@@ -6,6 +6,7 @@ import Error404 from './pages/Error404';
 import Error500 from './pages/Error500';
 import ErrorExtraction from './pages/ErrorExtraction';
 import ErrorUnsupportedFile from './pages/ErrorUnsupportedFile';
+import Features from './pages/Features';
 import Help from './pages/Help';
 import Home from './pages/Home';
 import Landing from './pages/Landing';
@@ -30,6 +31,7 @@ export const PAGES = {
     "Error500": Error500,
     "ErrorExtraction": ErrorExtraction,
     "ErrorUnsupportedFile": ErrorUnsupportedFile,
+    "Features": Features,
     "Help": Help,
     "Home": Home,
     "Landing": Landing,
