@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { TimePickerCombobox } from '@/components/ui/TimePickerCombobox';
 
 const START_HOUR = 0; // Calendar starts at 12 AM
 const END_HOUR = 23; // Calendar ends at 11 PM
@@ -33,11 +34,11 @@ const timeSlots = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => i 
 // Map day index (0=Sunday, 1=Monday, ...) to day name
 const dayIndexToName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
-// Generate time options (30 min intervals)
+// Generate time options (15 min intervals) - used for duration options
 const generateTimeOptions = () => {
   const options = [];
   for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 30) {
+    for (let m = 0; m < 60; m += 15) {
       const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
       const ampm = h >= 12 ? 'PM' : 'AM';
       const label = `${hour12}:${m.toString().padStart(2, '0')} ${ampm}`;
@@ -536,29 +537,19 @@ export default function WeeklyCalendar({ currentWeek, className }) {
               <Clock className="w-4 h-4 text-gray-400" />
               <div className="flex-1 flex items-center gap-2">
                 {/* Start Time */}
-                <Select
-                  value={String(editForm.startHour)}
-                  onValueChange={(val) => {
-                    const newStartHour = Number(val);
+                <TimePickerCombobox
+                  value={editForm.startHour}
+                  onChange={(val) => {
                     setEditForm(prev => ({
                       ...prev,
-                      startHour: newStartHour,
+                      startHour: val,
                       // Auto-adjust end time if it's before or equal to start time
-                      endHour: prev.endHour <= newStartHour ? newStartHour + 0.5 : prev.endHour
+                      endHour: prev.endHour <= val ? val + 0.25 : prev.endHour
                     }));
                   }}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Start" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {TIME_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={String(opt.value)}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="hh:mm"
+                  className="flex-1"
+                />
 
                 <span className="text-gray-400">—</span>
 
@@ -572,38 +563,29 @@ export default function WeeklyCalendar({ currentWeek, className }) {
                       <SelectValue placeholder="Duration" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
+                      {[0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
                         <SelectItem key={d} value={String(d)}>
-                          {d} hr{d !== 1 ? 's' : ''}
+                          {d < 1 ? `${d * 60} min` : `${d} hr${d !== 1 ? 's' : ''}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Select
-                    value={String(editForm.endHour)}
-                    onValueChange={(val) => {
-                      const newEndHour = Number(val);
+                  <TimePickerCombobox
+                    value={editForm.endHour}
+                    onChange={(val) => {
                       // Only allow end time after start time
-                      if (newEndHour > editForm.startHour) {
-                        setEditForm(prev => ({ ...prev, endHour: newEndHour }));
+                      if (val > editForm.startHour) {
+                        setEditForm(prev => ({ ...prev, endHour: val }));
                       } else {
-                        // Auto-adjust to 30 min after start
-                        setEditForm(prev => ({ ...prev, endHour: prev.startHour + 0.5 }));
+                        // Auto-adjust to 15 min after start
+                        setEditForm(prev => ({ ...prev, endHour: prev.startHour + 0.25 }));
                       }
                     }}
-                  >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="End" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {TIME_OPTIONS.filter(o => o.value > editForm.startHour).map(opt => (
-                        <SelectItem key={opt.value} value={String(opt.value)}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="hh:mm"
+                    filterAfter={editForm.startHour}
+                    className="flex-1"
+                  />
                 )}
               </div>
             </div>
@@ -747,28 +729,18 @@ export default function WeeklyCalendar({ currentWeek, className }) {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Start Time</Label>
-                <Select
-                  value={String(newEventForm.startHour)}
-                  onValueChange={(val) => {
-                    const newStartHour = parseFloat(val);
+                <TimePickerCombobox
+                  value={newEventForm.startHour}
+                  onChange={(val) => {
                     setNewEventForm(prev => ({
                       ...prev,
-                      startHour: newStartHour,
-                      endHour: prev.endHour <= newStartHour ? newStartHour + 0.5 : prev.endHour
+                      startHour: val,
+                      endHour: prev.endHour <= val ? val + 0.25 : prev.endHour
                     }));
                   }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {TIME_OPTIONS.map((opt, i) => (
-                      <SelectItem key={i} value={String(opt.value)}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="hh:mm"
+                  className="w-full"
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">{newEventForm.useDuration ? 'Duration' : 'End Time'}</Label>
@@ -781,35 +753,27 @@ export default function WeeklyCalendar({ currentWeek, className }) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {[0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
+                      {[0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
                         <SelectItem key={d} value={String(d)}>
-                          {d} hr{d !== 1 ? 's' : ''}
+                          {d < 1 ? `${d * 60} min` : `${d} hr${d !== 1 ? 's' : ''}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Select
-                    value={String(newEventForm.endHour)}
-                    onValueChange={(val) => {
-                      const newEndHour = parseFloat(val);
-                      setNewEventForm(prev => ({ ...prev, endHour: newEndHour }));
+                  <TimePickerCombobox
+                    value={newEventForm.endHour}
+                    onChange={(val) => {
+                      setNewEventForm(prev => ({ ...prev, endHour: val }));
                     }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {TIME_OPTIONS.filter(opt => opt.value > newEventForm.startHour).map((opt, i) => (
-                        <SelectItem key={i} value={String(opt.value)}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="hh:mm"
+                    filterAfter={newEventForm.startHour}
+                    className="w-full"
+                  />
                 )}
               </div>
             </div>
+
 
             {/* Duration Toggle */}
             <div className="flex items-center gap-3">
