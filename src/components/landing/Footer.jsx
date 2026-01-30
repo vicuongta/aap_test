@@ -24,7 +24,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-neutral-950">
+    <footer id="footer" className="bg-neutral-950">
       {/* Main Footer Content */}
       <div className="max-w-6xl mx-auto py-8">
         <div className="flex flex-col md:flex-row justify-between gap-12">

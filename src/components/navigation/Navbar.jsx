@@ -29,27 +29,10 @@ const GREEN = "#2d6a4f";
 
 const resources = [
   {
-    title: "Getting started",
-    items: [
-      { label: "Home", desc: "Start organizing your semester today", icon: Home, href: "#" },
-      { label: "See what QBTron can do", desc: "Learn QBTron and connect to tasks", icon: Sparkles, href: "#" },
-      { label: "Contact", desc: "Get in touch with our team", icon: Mail, href: "#" },
-    ],
-  },
-  {
-    title: "Learning tools",
-    items: [
-      { label: "AI assistant", desc: "Get study suggestions when you need", icon: Bot, href: "/Features#ai-assistant" },
-      { label: "Task tracking", desc: "Break tasks into manageable steps", icon: ListChecks, href: "/Features#task-tracking" },
-      { label: "Schedule view", desc: "See your week at a glance", icon: CalendarDays, href: "/Features#schedule-view" },
-    ],
-  },
-  {
-    title: "General",
     items: [
       { label: "FAQ", desc: "Find answers to common questions", icon: HelpCircle, href: "/#faq" },
       { label: "Team", desc: "Get to know the team behind QBTron", icon: Users, href: "#" },
-      { label: "Partners", desc: "Partner with QBTron for your institution", icon: Handshake, href: "#" },
+      { label: "Contact", desc: "Get in touch with our team", icon: Mail, href: "#" },
     ],
   },
 ];
@@ -147,28 +130,29 @@ export default function Navbar() {
             </a>
 
             <div className="hidden items-center gap-8 text-md text-white/80 md:flex">
+              <a href="/" className="hover:text-white">
+                Home
+              </a>
               <a href="/AboutUs" className="hover:text-white">
                 About Us
               </a>
               <a href="/Features" className="hover:text-white">
                 Features
               </a>
-              <a href="#" className="hover:text-white">
+              <a
+                href="/#faq"
+                onClick={(e) => handleLinkClick(e, "/#faq")}
+                className="hover:text-white"
+              >
+                FAQ
+              </a>
+              <a
+                href="/#footer"
+                onClick={(e) => handleLinkClick(e, "/#footer")}
+                className="hover:text-white"
+              >
                 Contact
               </a>
-
-              {/* Resources trigger */}
-              <Button
-                variant="default"
-                size="default"
-                onClick={() => setOpen((v) => !v)}
-                className="flex items-center gap-1 px-2 py-1 text-md"
-                aria-haspopup="menu"
-                aria-expanded={open}
-              >
-                Resources
-                <ChevronDown className={`h-3.5 w-3.5 transition ${open ? "rotate-180" : ""}`} />
-              </Button>
             </div>
           </div>
 
@@ -215,14 +199,16 @@ export default function Navbar() {
               open ? "scale-100" : "scale-[0.98]",
             ].join(" ")}
           >
-            <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-              {resources.map((col) => (
-                <div key={col.title}>
-                  <div className="mb-4 text-[14px] font-semibold uppercase tracking-wider text-white/70">
-                    {col.title}
-                  </div>
+            <div className="flex flex-col gap-6">
+              {resources.map((col, idx) => (
+                <div key={idx}>
+                  {col.title && (
+                    <div className="mb-3 text-[14px] font-semibold uppercase tracking-wider text-white/70">
+                      {col.title}
+                    </div>
+                  )}
 
-                  <div className="space-y-5">
+                  <div className="flex justify-evenly gap-4">
                     {col.items.map((it) => {
                       const Icon = it.icon;
                       return (
@@ -230,19 +216,19 @@ export default function Navbar() {
                           key={it.label}
                           href={it.href}
                           onClick={(e) => handleLinkClick(e, it.href)}
-                          className="group flex gap-3 rounded-lg p-3 hover:bg-white/5"
+                          className="group flex flex-1 items-start gap-3 rounded-lg p-3 hover:bg-white/5"
                         >
-                          <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5">
-                            <Icon className="h-6 w-6 text-white/80" />
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5">
+                            <Icon className="h-5 w-5 text-white/80" />
                           </div>
 
                           <div className="min-w-0">
                             <div className="text-md font-semibold text-white">{it.label}</div>
-                            {it.desc ? (
-                              <div className="mt-1 text-[13px] italic leading-snug text-white/55">
+                            {it.desc && (
+                              <div className="mt-1 text-[13px] leading-snug text-white/55">
                                 {it.desc}
                               </div>
-                            ) : null}
+                            )}
                           </div>
                         </a>
                       );
