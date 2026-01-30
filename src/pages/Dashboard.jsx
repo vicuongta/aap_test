@@ -1,26 +1,16 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import DailyCalendar from '@/components/dashboard/DailyCalendar';
 import UpcomingDeadlines from '@/components/dashboard/UpcomingDeadlines';
 import TodayStudyPlan from '@/components/dashboard/TodayStudyPlan';
 import FocusClock from '@/components/dashboard/FocusClock';
-import AskQBtronTrigger from '@/components/dashboard/AskQBtronTrigger';
-import ChatPopup from '@/components/dashboard/ChatPopup';
 import { motion } from 'framer-motion';
 
 export default function Dashboard() {
-  const [chatOpen, setChatOpen] = useState(false);
-  const [initialMessage, setInitialMessage] = useState('');
-
   const mockUser = {
     full_name: 'Alex Johnson',
     email: 'alex.johnson@university.edu'
-  };
-
-  const handleOpenChat = (message) => {
-    setInitialMessage(message);
-    setChatOpen(true);
   };
 
   return (
@@ -33,25 +23,12 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-4 flex items-center justify-between gap-4 flex-shrink-0"
+          className="mb-4 flex-shrink-0"
         >
-          <div className="flex-shrink-0">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Welcome back, {mockUser.full_name.split(' ')[0]}!
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-3 ml-auto">
-            {/* <FocusClock /> */}
-            <AskQBtronTrigger onClick={handleOpenChat} className="w-[140px] sm:w-[180px] lg:w-[220px]" />
-          </div>
+          <h2 className="text-3xl font-bold text-gray-900">
+            Welcome back, {mockUser.full_name.split(' ')[0]}!
+          </h2>
         </motion.div>
-
-        <ChatPopup
-          open={chatOpen}
-          onOpenChange={setChatOpen}
-          initialMessage={initialMessage}
-        />
 
         {/* 3 main columns for study plan / coming up / calendar */}
         <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">

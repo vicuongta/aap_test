@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ProfileDropdown from './ProfileDropdown';
 import { Bell, Pause, Play, X, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTimer } from '@/contexts/TimerContext';
+import AskQBtronTrigger from '@/components/dashboard/AskQBtronTrigger';
+import ChatPopup from '@/components/dashboard/ChatPopup';
 
 export default function AppHeader({ user, title, breadcrumb }) {
   const { activeTask, remainingSeconds, isPaused, isRunning, togglePause, stopTimer, formatTime } = useTimer();
+  const [chatOpen, setChatOpen] = useState(false);
+  const [initialMessage, setInitialMessage] = useState('');
+
+  const handleOpenChat = (message) => {
+    setInitialMessage(message);
+    setChatOpen(true);
+  };
 
   return (
     <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6">
@@ -18,7 +27,7 @@ export default function AppHeader({ user, title, breadcrumb }) {
         <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* Timer Display */}
         {isRunning && (
           <div className="flex items-center gap-2 bg-amber-50/50 border-2 border-amber-400 rounded-lg px-3 py-1.5 shadow-sm">
@@ -67,6 +76,15 @@ export default function AppHeader({ user, title, breadcrumb }) {
             </Button>
           </div>
         )}
+
+        {/* Ask QBtron - Narrower version */}
+        <AskQBtronTrigger onClick={handleOpenChat} className="w-32 h-9" />
+
+        <ChatPopup
+          open={chatOpen}
+          onOpenChange={setChatOpen}
+          initialMessage={initialMessage}
+        />
 
         <Button variant="ghost" size="icon" className="relative text-gray-500 hover:text-gray-700">
           <Bell className="w-5 h-5" />

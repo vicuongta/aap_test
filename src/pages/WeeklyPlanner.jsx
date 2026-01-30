@@ -40,7 +40,12 @@ export default function WeeklyPlanner() {
 
   return (
     <AppLayout user={mockUser} title="Schedule" breadcrumb="Dashboard / Schedule">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="h-full flex flex-col min-h-0"
+      >
         {/* Controls */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
@@ -75,8 +80,10 @@ export default function WeeklyPlanner() {
         </div>
 
         {/* View Content */}
-        {view === 'week' && <WeeklyCalendar currentWeek={currentWeek} />}
-        {view === 'month' && <MonthlyView currentMonth={currentMonth} />}
+        <div className="flex-1 min-h-0">
+          {view === 'week' && <WeeklyCalendar currentWeek={currentWeek} className="h-full" />}
+          {view === 'month' && <MonthlyView currentMonth={currentMonth} />}
+        </div>
       </motion.div>
     </AppLayout>
   );

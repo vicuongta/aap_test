@@ -30,8 +30,8 @@ export default function AskQBtronTrigger({ onClick, className }) {
       <Sparkles className="w-5 h-5 text-white/90 group-hover:text-white group-hover:animate-pulse" />
 
       {/* Text */}
-      <span className="text-sm font-medium text-white/90 group-hover:text-white hidden sm:inline truncate">
-        Ask QBtron...
+      <span className="text-sm font-medium text-white/90 group-hover:text-white truncate">
+        Ask Agent
       </span>
 
       {/* Keyboard shortcut */}

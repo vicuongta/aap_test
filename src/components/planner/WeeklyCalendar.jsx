@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { format, addDays, startOfWeek, isToday, getHours, getMinutes, getDay, isSameDay } from 'date-fns';
 import { getCourseColorByCode } from '@/components/utils/courseColors';
 import { useSchedule } from '@/contexts/ScheduleContext';
-import { Pencil, Trash2, Clock, CalendarIcon } from 'lucide-react';
+import { Pencil, Trash2, Clock, CalendarIcon, Plus, BookOpen, Calendar as CalIcon, Users } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -25,17 +25,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { TimePickerCombobox } from '@/components/ui/TimePickerCombobox';
 
-const timeSlots = Array.from({ length: 14 }, (_, i) => i + 8); // 8 AM to 9 PM
+const START_HOUR = 0; // Calendar starts at 12 AM
+const END_HOUR = 23; // Calendar ends at 11 PM
+const timeSlots = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => i + START_HOUR); // 12 AM to 11 PM
 
 // Map day index (0=Sunday, 1=Monday, ...) to day name
 const dayIndexToName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
-// Generate time options (30 min intervals)
+// Generate time options (15 min intervals) - used for duration options
 const generateTimeOptions = () => {
   const options = [];
   for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 30) {
+    for (let m = 0; m < 60; m += 15) {
       const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
       const ampm = h >= 12 ? 'PM' : 'AM';
       const label = `${hour12}:${m.toString().padStart(2, '0')} ${ampm}`;
@@ -53,8 +56,18 @@ const getPriorityDotColor = (priority) => {
   return 'bg-gray-400';
 };
 
-// Same color rules as DailyCalendar
+// Event type colors
 const getEventStyles = (event, allBlocksInDay) => {
+  // New event types
+  if (event.eventType === 'general') {
+    return { bg: '#f3f4f6', text: '#374151', border: '#d1d5db', accent: '#6b7280' }; // gray
+  } else if (event.eventType === 'class') {
+    return { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd', accent: '#2563eb' }; // blue
+  } else if (event.eventType === 'appointment') {
+    return { bg: '#fef3c7', text: '#92400e', border: '#fcd34d', accent: '#f59e0b' }; // yellow
+  }
+
+  // Legacy event types
   // Check if school event has conflict with deadline
   const hasConflict = event.type === 'school' && (
     allBlocksInDay.some(e =>
@@ -68,11 +81,11 @@ const getEventStyles = (event, allBlocksInDay) => {
   if (event.type === 'school') {
     return hasConflict
       ? { bg: '#e0f2fe', text: '#dc2626', border: '#ef4444', accent: '#ef4444' } // red text for conflict
-      : { bg: '#e0f2fe', text: '#0c4a6e', border: '#7dd3fc', accent: '#0284c7' }; // normal sky
+      : { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd', accent: '#2563eb' }; // blue (class)
   } else if (event.type === 'deadline') {
-    return { bg: '#ef4444', text: '#ffffff', border: '#b91c1c', accent: '#b91c1c' }; // red
+    return { bg: '#fee2e2', text: '#b91c1c', border: '#f87171', accent: '#dc2626' }; // red (deadline)
   } else {
-    return { bg: '#f3f4f6', text: '#374151', border: '#d1d5db', accent: '#6b7280' }; // gray
+    return { bg: '#f3f4f6', text: '#374151', border: '#d1d5db', accent: '#6b7280' }; // gray (general)
   }
 };
 
@@ -131,7 +144,7 @@ const calculateOverlapPositions = (blocks) => {
   return positioned;
 };
 
-export default function WeeklyCalendar({ currentWeek }) {
+export default function WeeklyCalendar({ currentWeek, className }) {
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -151,8 +164,38 @@ export default function WeeklyCalendar({ currentWeek }) {
     useDuration: false,
     duration: 1,
     details: '',
-    associatedDeadline: ''
+    associatedDeadline: '',
+    eventType: 'general'
   });
+
+  // Add event menu state
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [newEventType, setNewEventType] = useState('general');
+  const [newEventForm, setNewEventForm] = useState({
+    title: '',
+    selectedDate: new Date(),
+    startHour: 9,
+    endHour: 10,
+    useDuration: false,
+    duration: 1,
+    details: ''
+  });
+
+  // Handle double-click on time slot to create event
+  const handleDoubleClickTimeSlot = (day, hour) => {
+    setNewEventType('general');
+    setNewEventForm({
+      title: '',
+      selectedDate: day,
+      startHour: hour,
+      endHour: hour + 1,
+      useDuration: false,
+      duration: 1,
+      details: ''
+    });
+    setAddModalOpen(true);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -295,8 +338,9 @@ export default function WeeklyCalendar({ currentWeek }) {
   const getCurrentTimePosition = () => {
     const hours = getHours(currentTime);
     const minutes = getMinutes(currentTime);
-    if (hours < 8 || hours >= 22) return null;
-    const position = ((hours - 8) * 64) + ((minutes / 60) * 64);
+    // Adjust for start hour offset
+    if (hours < START_HOUR || hours > END_HOUR) return null;
+    const position = ((hours - START_HOUR) * 64) + ((minutes / 60) * 64);
     return position;
   };
 
@@ -304,125 +348,136 @@ export default function WeeklyCalendar({ currentWeek }) {
   const currentTimePosition = getCurrentTimePosition();
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    <div className={cn("bg-white rounded-2xl border-2 border-gray-200 overflow-hidden flex flex-col", className)}>
       {/* Header */}
-      <div className="grid grid-cols-8 border-b border-gray-100">
-        <div className="p-4 bg-[#f6f8f6]"></div>
-        {days.map((day, index) => {
-          const isDayToday = isToday(day);
-          return (
-            <div
-              key={index}
-              className={cn(
-                "p-4 text-center border-l border-gray-100",
-                isDayToday && "bg-[#2d6a4f]/5"
-              )}
-            >
-              {isDayToday && (
-                <p className="text-xs font-semibold text-[#2d6a4f] uppercase tracking-wide mb-1">Today</p>
-              )}
-              <p className="text-xs text-gray-500 uppercase tracking-wide">{format(day, 'EEE')}</p>
-              <p className={cn(
-                "text-lg font-semibold mt-1",
-                isDayToday ? "text-[#2d6a4f]" : "text-gray-900"
-              )}>
-                {format(day, 'd')}
-              </p>
-            </div>
-          );
-        })}
+      <div className="flex border-b border-gray-200 flex-none bg-white z-10 text-xs pr-[17px]">
+        <div className="w-24 flex-none p-2 flex items-center justify-center border-r border-gray-200 relative">
+          <button
+            onClick={() => {
+              setNewEventType('general');
+              setAddModalOpen(true);
+            }}
+            className="w-full h-10 rounded-md bg-[#1b4332] hover:bg-[#081c15] text-white flex items-center justify-center gap-1 transition-colors shadow-sm"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="flex-1 grid grid-cols-7">
+          {days.map((day, index) => {
+            const isDayToday = isToday(day);
+            return (
+              <div
+                key={index}
+                className="py-2 text-center border-r border-gray-200 last:border-r-0"
+              >
+                <p className="text-xs text-gray-900 uppercase tracking-wide">{format(day, 'EEE')}</p>
+                <div className="flex justify-center mt-1">
+                  <span className={cn(
+                    "text-2xl font-normal w-10 h-10 flex items-center justify-center rounded-full",
+                    isDayToday ? "bg-[#1b4332] text-white" : "text-gray-700"
+                  )}>
+                    {format(day, 'd')}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Time Grid */}
-      <div className="relative">
-        <div className="grid grid-cols-8">
+      <div className="relative flex-1 overflow-y-auto min-h-0">
+        <div className="flex min-h-max">
           {/* Time column */}
-          <div className="border-r border-gray-100">
+          <div className="w-24 flex-none border-r border-gray-200 bg-white z-20">
             {timeSlots.map((hour) => (
-              <div key={hour} className="h-16 border-b border-gray-50 px-3 pt-1">
-                <span className="text-xs text-gray-400">
-                  {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
+              <div key={hour} className="h-16 border-b border-gray-200 flex items-center justify-end pr-3">
+                <span className="text-xs text-gray-500 font-medium">
+                  {hour === 0 ? '12 AM' : hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* Day columns */}
-          {days.map((day, dayIndex) => {
-            const isDayToday = isToday(day);
-            return (
-              <div
-                key={dayIndex}
-                className={cn(
-                  "relative border-r border-gray-100 last:border-r-0",
-                  isDayToday && "bg-[#2d6a4f]/5"
-                )}
-              >
-                {timeSlots.map((hour) => (
-                  <div key={hour} className="h-16 border-b border-gray-50"></div>
-                ))}
+          {/* Day columns container */}
+          <div className="flex-1 grid grid-cols-7">
+            {days.map((day, dayIndex) => {
+              const isDayToday = isToday(day);
+              return (
+                <div
+                  key={dayIndex}
+                  className="relative border-r border-gray-200 last:border-r-0"
+                >
+                  {timeSlots.map((hour) => (
+                    <div
+                      key={hour}
+                      className="h-16 border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+                      onDoubleClick={() => handleDoubleClickTimeSlot(day, hour)}
+                    />
+                  ))}
 
-                {/* Current time indicator */}
-                {/* {isDayToday && currentTimePosition !== null && (
-                  <div
-                    className="absolute left-0 right-0 z-0 pointer-events-none"
-                    style={{ top: `${currentTimePosition}px` }}
-                  >
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 rounded-full bg-[#2d6a4f] -ml-1" />
-                      <div className="flex-1 h-0.5 bg-[#2d6a4f]" />
+                  {/* Current time indicator */}
+                  {isDayToday && currentTimePosition !== null && (
+                    <div
+                      className="absolute left-0 right-0 z-20 pointer-events-none"
+                      style={{ top: `${currentTimePosition}px` }}
+                    >
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 rounded-full bg-red-500 -ml-1.5 border-2 border-white shadow-sm" />
+                        <div className="flex-1 h-0.5 bg-red-500" />
+                      </div>
                     </div>
-                  </div>
-                )} */}
+                  )}
 
-                {/* Schedule blocks */}
-                {(() => {
-                  const dayBlocks = scheduleBlocks.filter(block => block.day === dayIndex);
-                  const positionedBlocks = calculateOverlapPositions(dayBlocks);
+                  {/* Schedule blocks */}
+                  {(() => {
+                    const dayBlocks = scheduleBlocks.filter(block => block.day === dayIndex);
+                    const positionedBlocks = calculateOverlapPositions(dayBlocks);
 
-                  return positionedBlocks.map((block) => {
-                    const eventStyles = getEventStyles(block, dayBlocks);
-                    const widthPercent = 100 / block.totalColumns;
-                    const leftPercent = block.column * widthPercent;
+                    return positionedBlocks.map((block) => {
+                      const eventStyles = getEventStyles(block, dayBlocks);
+                      const widthPercent = 100 / block.totalColumns;
+                      const leftPercent = block.column * widthPercent;
 
-                    return (
-                      <div
-                        key={block.id}
-                        onClick={(e) => handleEditClick(block, e)}
-                        className="absolute rounded-lg border px-2 py-1 cursor-pointer hover:shadow-md transition-shadow overflow-hidden group"
-                        style={{
-                          top: `${(block.startHour - 8) * 64}px`,
-                          height: `${block.duration * 64 - 4}px`,
-                          left: `calc(${leftPercent}% + 4px)`,
-                          width: `calc(${widthPercent}% - 8px)`,
-                          backgroundColor: eventStyles.bg,
-                          borderColor: eventStyles.border,
-                          borderLeftWidth: '3px',
-                          borderLeftColor: eventStyles.accent,
-                          color: eventStyles.text,
-                          zIndex: block.column + 1,
-                        }}
-                      >
-                        <div className="flex flex-col h-full">
-                          <p className="text-xs font-medium leading-tight line-clamp-2">{block.title}</p>
-                          <p className="text-[10px] opacity-70 mt-0.5">
-                            {block.startHour > 12 ? block.startHour - 12 : block.startHour}
-                            {block.startHour >= 12 ? 'PM' : 'AM'}
-                          </p>
-                          <div className="flex items-center gap-1 mt-auto">
-                            {block.priority && (
-                              <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", getPriorityDotColor(block.priority))} />
-                            )}
-                            <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-70 transition-opacity ml-auto" />
+                      return (
+                        <div
+                          key={block.id}
+                          onClick={(e) => handleEditClick(block, e)}
+                          className="absolute rounded-lg border px-2 py-1 cursor-pointer hover:shadow-md transition-shadow overflow-hidden group"
+                          style={{
+                            top: `${block.startHour * 64}px`,
+                            height: `${block.duration * 64 - 4}px`,
+                            left: `calc(${leftPercent}% + 4px)`,
+                            width: `calc(${widthPercent}% - 8px)`,
+                            backgroundColor: eventStyles.bg,
+                            borderColor: eventStyles.border,
+                            borderLeftWidth: '3px',
+                            borderLeftColor: eventStyles.accent,
+                            color: eventStyles.text,
+                            zIndex: block.column + 1,
+                          }}
+                        >
+                          <div className="flex flex-col h-full">
+                            <p className="text-xs font-medium leading-tight line-clamp-2">{block.title}</p>
+                            <p className="text-[10px] opacity-70 mt-0.5">
+                              {block.startHour > 12 ? block.startHour - 12 : block.startHour}
+                              {block.startHour >= 12 ? 'PM' : 'AM'}
+                            </p>
+                            <div className="flex items-center gap-1 mt-auto">
+                              {block.priority && (
+                                <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", getPriorityDotColor(block.priority))} />
+                              )}
+                              <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-70 transition-opacity ml-auto" />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
-            );
-          })}
+                      );
+                    });
+                  })()}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -482,21 +537,19 @@ export default function WeeklyCalendar({ currentWeek }) {
               <Clock className="w-4 h-4 text-gray-400" />
               <div className="flex-1 flex items-center gap-2">
                 {/* Start Time */}
-                <Select
-                  value={String(editForm.startHour)}
-                  onValueChange={(val) => setEditForm(prev => ({ ...prev, startHour: Number(val) }))}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Start" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {TIME_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={String(opt.value)}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <TimePickerCombobox
+                  value={editForm.startHour}
+                  onChange={(val) => {
+                    setEditForm(prev => ({
+                      ...prev,
+                      startHour: val,
+                      // Auto-adjust end time if it's before or equal to start time
+                      endHour: prev.endHour <= val ? val + 0.25 : prev.endHour
+                    }));
+                  }}
+                  placeholder="hh:mm"
+                  className="flex-1"
+                />
 
                 <span className="text-gray-400">—</span>
 
@@ -510,29 +563,29 @@ export default function WeeklyCalendar({ currentWeek }) {
                       <SelectValue placeholder="Duration" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
+                      {[0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
                         <SelectItem key={d} value={String(d)}>
-                          {d} hr{d !== 1 ? 's' : ''}
+                          {d < 1 ? `${d * 60} min` : `${d} hr${d !== 1 ? 's' : ''}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Select
-                    value={String(editForm.endHour)}
-                    onValueChange={(val) => setEditForm(prev => ({ ...prev, endHour: Number(val) }))}
-                  >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="End" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {TIME_OPTIONS.filter(o => o.value > editForm.startHour).map(opt => (
-                        <SelectItem key={opt.value} value={String(opt.value)}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <TimePickerCombobox
+                    value={editForm.endHour}
+                    onChange={(val) => {
+                      // Only allow end time after start time
+                      if (val > editForm.startHour) {
+                        setEditForm(prev => ({ ...prev, endHour: val }));
+                      } else {
+                        // Auto-adjust to 15 min after start
+                        setEditForm(prev => ({ ...prev, endHour: prev.startHour + 0.25 }));
+                      }
+                    }}
+                    placeholder="hh:mm"
+                    filterAfter={editForm.startHour}
+                    className="flex-1"
+                  />
                 )}
               </div>
             </div>
@@ -590,6 +643,200 @@ export default function WeeklyCalendar({ currentWeek }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+
+      {/* Add Event Modal */}
+      <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className={cn(
+                "w-3 h-3 rounded-full",
+                newEventType === 'general' && "bg-gray-400",
+                newEventType === 'class' && "bg-blue-500",
+                newEventType === 'appointment' && "bg-yellow-400"
+              )} />
+              New Event
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Event Type Selector */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Event Type</Label>
+              <Select
+                value={newEventType}
+                onValueChange={(val) => setNewEventType(val)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-gray-400" />
+                      General Event
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="class">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      Class Time
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="appointment">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-yellow-400" />
+                      Appointment
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Title */}
+            <div className="space-y-2">
+              <Input
+                id="newEventTitle"
+                value={newEventForm.title}
+                onChange={(e) => setNewEventForm(prev => ({ ...prev, title: e.target.value }))}
+                className="text-lg font-medium"
+                placeholder="Add title"
+              />
+            </div>
+
+            {/* Date Picker */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {format(newEventForm.selectedDate, 'EEEE, MMMM d, yyyy')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={newEventForm.selectedDate}
+                    onSelect={(date) => setNewEventForm(prev => ({ ...prev, selectedDate: date || new Date() }))}
+                    initialFocus
+                    className=""
+                    classNames={{}}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Time Selection */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Start Time</Label>
+                <TimePickerCombobox
+                  value={newEventForm.startHour}
+                  onChange={(val) => {
+                    setNewEventForm(prev => ({
+                      ...prev,
+                      startHour: val,
+                      endHour: prev.endHour <= val ? val + 0.25 : prev.endHour
+                    }));
+                  }}
+                  placeholder="hh:mm"
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">{newEventForm.useDuration ? 'Duration' : 'End Time'}</Label>
+                {newEventForm.useDuration ? (
+                  <Select
+                    value={String(newEventForm.duration)}
+                    onValueChange={(val) => setNewEventForm(prev => ({ ...prev, duration: Number(val) }))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
+                        <SelectItem key={d} value={String(d)}>
+                          {d < 1 ? `${d * 60} min` : `${d} hr${d !== 1 ? 's' : ''}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <TimePickerCombobox
+                    value={newEventForm.endHour}
+                    onChange={(val) => {
+                      setNewEventForm(prev => ({ ...prev, endHour: val }));
+                    }}
+                    placeholder="hh:mm"
+                    filterAfter={newEventForm.startHour}
+                    className="w-full"
+                  />
+                )}
+              </div>
+            </div>
+
+
+            {/* Duration Toggle */}
+            <div className="flex items-center gap-3">
+              <Switch
+                id="new-use-duration"
+                checked={newEventForm.useDuration}
+                onCheckedChange={(val) => setNewEventForm(prev => ({ ...prev, useDuration: val }))}
+              />
+              <Label htmlFor="new-use-duration" className="text-sm text-gray-500 cursor-pointer">
+                Use duration instead
+              </Label>
+            </div>
+
+            {/* Details */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Details</Label>
+              <Input
+                value={newEventForm.details}
+                onChange={(e) => setNewEventForm(prev => ({ ...prev, details: e.target.value }))}
+                placeholder="Add location, notes, etc."
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={() => {
+              // Create new event
+              const newEvent = {
+                id: `event-${Date.now()}`,
+                title: newEventForm.title || 'Untitled Event',
+                startHour: newEventForm.startHour,
+                endHour: newEventForm.useDuration
+                  ? newEventForm.startHour + newEventForm.duration
+                  : newEventForm.endHour,
+                dueDate: newEventForm.selectedDate,
+                details: newEventForm.details,
+                eventType: newEventType,
+                type: newEventType === 'class' ? 'school' : newEventType === 'appointment' ? 'deadline' : 'general'
+              };
+
+              // Add to tasks (one-time events)
+              setTasks(prev => [...prev, newEvent]);
+
+              // Reset form
+              setNewEventForm({
+                title: '',
+                selectedDate: new Date(),
+                startHour: 9,
+                endHour: 10,
+                useDuration: false,
+                duration: 1,
+                details: ''
+              });
+              setAddModalOpen(false);
+            }}>
+              Create Event
+            </Button>
+          </DialogFooter>
+        </DialogContent >
+      </Dialog >
+    </div >
   );
 }

@@ -24,15 +24,16 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useSchedule } from '@/contexts/ScheduleContext';
+import { TimePickerCombobox } from '@/components/ui/TimePickerCombobox';
 
 // Days of the week
 const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-// Generate time options (30 min intervals)
+// Generate time options (15 min intervals) - used for duration options
 const generateTimeOptions = () => {
   const options = [];
   for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 30) {
+    for (let m = 0; m < 60; m += 15) {
       const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
       const ampm = h >= 12 ? 'PM' : 'AM';
       const label = `${hour12}:${m.toString().padStart(2, '0')} ${ampm}`;
@@ -478,21 +479,18 @@ export default function DailyCalendar() {
               <Clock className="w-4 h-4 text-gray-400" />
               <div className="flex-1 flex items-center gap-2">
                 {/* Start Time */}
-                <Select
-                  value={String(editForm.startHour)}
-                  onValueChange={(val) => setEditForm(prev => ({ ...prev, startHour: Number(val) }))}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Start" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {TIME_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={String(opt.value)}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <TimePickerCombobox
+                  value={editForm.startHour}
+                  onChange={(val) => {
+                    setEditForm(prev => ({
+                      ...prev,
+                      startHour: val,
+                      endHour: prev.endHour <= val ? val + 0.25 : prev.endHour
+                    }));
+                  }}
+                  placeholder="hh:mm"
+                  className="flex-1"
+                />
 
                 <span className="text-gray-400">—</span>
 
@@ -506,29 +504,27 @@ export default function DailyCalendar() {
                       <SelectValue placeholder="Duration" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
+                      {[0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6].map(d => (
                         <SelectItem key={d} value={String(d)}>
-                          {d} hr{d !== 1 ? 's' : ''}
+                          {d < 1 ? `${d * 60} min` : `${d} hr${d !== 1 ? 's' : ''}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Select
-                    value={String(editForm.endHour)}
-                    onValueChange={(val) => setEditForm(prev => ({ ...prev, endHour: Number(val) }))}
-                  >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="End" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {TIME_OPTIONS.filter(o => o.value > editForm.startHour).map(opt => (
-                        <SelectItem key={opt.value} value={String(opt.value)}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <TimePickerCombobox
+                    value={editForm.endHour}
+                    onChange={(val) => {
+                      if (val > editForm.startHour) {
+                        setEditForm(prev => ({ ...prev, endHour: val }));
+                      } else {
+                        setEditForm(prev => ({ ...prev, endHour: prev.startHour + 0.25 }));
+                      }
+                    }}
+                    placeholder="hh:mm"
+                    filterAfter={editForm.startHour}
+                    className="flex-1"
+                  />
                 )}
               </div>
             </div>
