@@ -147,7 +147,7 @@ export default function Navbar() {
             </a>
 
             <div className="hidden items-center gap-8 text-md text-white/80 md:flex">
-              <a href="#" className="hover:text-white">
+              <a href="/AboutUs" className="hover:text-white">
                 About Us
               </a>
               <a href="/Features" className="hover:text-white">

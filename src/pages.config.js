@@ -1,3 +1,4 @@
+import AboutUs from './pages/AboutUs';
 import Chat from './pages/Chat';
 import Courses from './pages/Courses';
 import Dashboard from './pages/Dashboard';
@@ -26,6 +27,7 @@ import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AboutUs": AboutUs,
     "Chat": Chat,
     "Courses": Courses,
     "Dashboard": Dashboard,

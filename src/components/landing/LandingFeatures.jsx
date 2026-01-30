@@ -1,69 +1,55 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+// @ts-nocheck
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, ListTodo, CalendarDays, Sparkles } from "lucide-react";
 
-const cards = [
+// Import feature images
+import StudyPlanImg from "@/assets/features/study-plan.png";
+import TaskTrackingImg from "@/assets/features/task-tracking.png";
+import CalendarImg from "@/assets/features/calendar.png";
+
+const GREEN = "#2d6a4f";
+
+const features = [
   {
-    tag: "Schedule",
-    title: "Fixed schedule view",
-    desc: "See your week at a glance with recurring tasks",
-    img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1600&q=80",
-    href: "#",
+    id: "study-plan",
+    label: "Study Plan",
+    icon: Sparkles,
+    title: "Plan your studies intelligently",
+    subtitle: "with QBtron's AI-powered recommendations",
+    description: "QBtron analyzes your task list and deadlines to suggest what to do today. Get AI-generated study recommendations based on priority, due dates, and estimated time.",
+    secondaryText: "That way, you can focus on studying instead of deciding what to study next. Start each day with clarity and purpose.",
+    image: StudyPlanImg,
   },
   {
-    tag: "Tasks",
-    title: "Flexible task panel",
-    desc: "AI-generated and manual tasks in one place",
-    img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1600&q=80",
-    href: "#",
+    id: "task-tracking",
+    label: "Task Tracking",
+    icon: ListTodo,
+    title: "Track every task",
+    subtitle: "from assignment to completion",
+    description: "Break down large assignments into manageable steps. Check off tasks as you complete them and watch your progress grow.",
+    secondaryText: "Organize by course, priority, or due date. QBtron adapts to how you like to work.",
+    image: TaskTrackingImg,
   },
   {
-    tag: "Calendar",
-    title: "Interactive calendar view",
-    desc: "Drag tasks to schedule them exactly when you need",
-    img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=80",
-    href: "#",
+    id: "calendar",
+    label: "Calendar",
+    icon: CalendarDays,
+    title: "Visualize your schedule",
+    subtitle: "with an integrated calendar view",
+    description: "See your fixed schedule, events, and deadlines in one unified calendar. Drag and drop tasks to plan your week with precision.",
+    secondaryText: "Balance your classes, study sessions, and personal life with a calendar designed for students.",
+    image: CalendarImg,
   },
 ];
 
-// add near top (inside file, above component)
-const gridVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.12,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 22, scale: 0.98 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 140,
-      damping: 18,
-      mass: 0.6,
-    },
-  },
-};
-
-
 export default function LandingFeatures() {
-  return (
-    <section className="relative overflow-hidden bg-white px-6 py-20 md:py-24">
-      {/* background vignette */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(900px_450px_at_50%_0%,rgba(120,40,40,0.25),transparent_65%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(900px_450px_at_10%_100%,rgba(255,255,255,0.06),transparent_60%)]" />
-      </div>
+  const [activeTab, setActiveTab] = useState("study-plan");
+  const activeFeature = features.find((f) => f.id === activeTab) || features[0];
 
-      {/* Gradient transition from hero section */}
+  return (
+    <section id="features" className="relative overflow-hidden bg-neutral-100 px-6 py-20 md:py-28">
+      {/* Gradient transition from hero */}
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-neutral-950 via-neutral-800/30 to-transparent" />
 
       <div className="relative mx-auto max-w-6xl">
@@ -75,57 +61,106 @@ export default function LandingFeatures() {
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="text-center"
         >
-          <div className="text-xl font-semibold tracking-wide text-neutral-950">
-            Built
-          </div>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
-            Three ways to work
+          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 md:text-5xl">
+            Tools built for student success
           </h2>
-          <p className="mt-3 text-sm text-neutral-950 md:text-base">
-            Everything you need in one place
+          <p className="mt-4 text-neutral-600 md:text-lg">
+            Everything you need to stay organized and ace your semester
           </p>
         </motion.div>
 
-        {/* Cards */}
-        <div className="mt-14 grid gap-6 md:gap-8 lg:grid-cols-3">
-          {cards.map((c, i) => (
-            <motion.a
-              key={c.title}
-              href={c.href}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-120px" }}
-              transition={{ duration: 0.55, ease: "easeOut", delay: i * 0.08 }}
-              whileHover={{ y: -4 }}
-              className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur"
+        {/* Feature Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+          className="mt-10 flex flex-wrap justify-center gap-3"
+        >
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            const isActive = activeTab === feature.id;
+            return (
+              <button
+                key={feature.id}
+                onClick={() => setActiveTab(feature.id)}
+                className={`group flex items-center gap-2 rounded-full px-6 py-3 text-base font-medium transition-all duration-300 ${isActive
+                  ? "text-white shadow-lg"
+                  : "bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
+                  }`}
+                style={isActive ? { backgroundColor: GREEN } : {}}
+              >
+                <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-neutral-500 group-hover:text-neutral-700"}`} />
+                {feature.label}
+              </button>
+            );
+          })}
+        </motion.div>
+
+        {/* Feature Content */}
+        <div className="mt-14 md:mt-16">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeFeature.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="grid items-center gap-12 md:grid-cols-2 md:gap-24"
             >
-              <div className="h-44 w-full overflow-hidden md:h-48">
-                <img
-                  src={c.img}
-                  alt={c.title}
-                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                />
+              {/* Text Content */}
+              <div className="order-2 md:order-1">
+                <h3 className="text-2xl font-bold text-neutral-900 md:text-3xl lg:text-4xl">
+                  {activeFeature.title}
+                  <br />
+                  <span className="text-neutral-500">{activeFeature.subtitle}</span>
+                </h3>
+
+                <p className="mt-6 text-neutral-600 leading-relaxed md:text-lg">
+                  {activeFeature.description}
+                </p>
+
+                <p className="mt-4 text-neutral-500 leading-relaxed md:text-lg">
+                  {activeFeature.secondaryText}
+                </p>
+
+                {/* <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <a
+                    href="/SignUp"
+                    className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-all hover:opacity-90"
+                    style={{ backgroundColor: GREEN }}
+                  >
+                    Get started
+                  </a>
+                  <a
+                    href="/Features"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-neutral-700 hover:text-neutral-900 transition-colors"
+                  >
+                    Learn more <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div> */}
               </div>
 
-              <div className="px-6 py-6">
-                <div className="text-[11px] font-semibold tracking-wide text-neutral-950">
-                  {c.tag}
-                </div>
+              {/* Image */}
+              <div className="order-1 md:order-2 flex justify-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="relative max-w-[450px]"
+                >
+                  {/* Shadow/glow effect */}
+                  <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-neutral-200/50 to-transparent blur-2xl" />
 
-                <div className="mt-2 text-2xl font-semibold tracking-tight text-neutral-950">
-                  {c.title}
-                </div>
-
-                <div className="mt-3 text-sm leading-relaxed text-neutral-950">
-                  {c.desc}
-                </div>
-
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-neutral-950 transition-colors group-hover:text-white">
-                  Explore <ArrowRight className="h-4 w-4" />
-                </div>
+                  <img
+                    src={activeFeature.image}
+                    alt={activeFeature.label}
+                    className="relative rounded-2xl shadow-2xl border border-neutral-200/50 w-full"
+                  />
+                </motion.div>
               </div>
-            </motion.a>
-          ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>
